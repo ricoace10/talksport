@@ -1,20 +1,26 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '@prisma/client';
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 async function main() {
-    const allUsers = await prisma.user.findMany()
-  console.log(allUsers)
- 
-  // ... you will write your Prisma Client queries here
+  // Create a new user
+  const user = await prisma.user.create({
+    data: {
+      name: "John Doe",
+      email: "john.doe@example.com",
+      password: "securepassword123", // You should hash passwords in production!
+      isAdmin: false, // Set true if this is an admin user
+    },
+  });
+
+  console.log("User created:", user);
 }
 
 main()
-  .then(async () => {
-    await prisma.$disconnect()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
   })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

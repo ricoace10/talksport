@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "queries": "ts-node path-to-your-query-script.ts"
+    "queries": "ts-node src/script.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.0.1",
@@ -25,6 +25,7 @@
     "postcss": "^8",
     "prisma": "^6.0.1",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
