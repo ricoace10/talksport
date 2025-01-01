@@ -3,9 +3,11 @@ import Layout from "../components/Layout";
 const Login = () => {
   return (
     <Layout>
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center h-screen bg-gray-100">
         <div className="w-full max-w-sm bg-white p-8 rounded-md shadow-md">
-          <h1 className="text-4xl font-bold text-yellow-500 mb-8 text-center">TalkSport</h1>
+          <h1 className="text-4xl font-bold text-yellow-500 mb-8 text-center">
+            TalkSport
+          </h1>
 
           <form>
             <div className="mb-4">

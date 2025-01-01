@@ -4,10 +4,12 @@ import Link from "next/link";
 const Register = () => {
   return (
     <Layout>
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center h-screen bg-gray-100">
         <div className="w-full max-w-lg bg-white p-8 rounded-md shadow-md">
-          <h1 className="text-2xl font-bold text-black mb-4">Sign Up</h1>
-          <p className="text-gray-700 mb-6">
+          <h1 className="text-2xl font-bold text-black mb-4 text-center">
+            Sign Up
+          </h1>
+          <p className="text-gray-700 mb-6 text-center">
             Welcome to TalkSport. Do you already have an account? Then{" "}
             <Link href="/login" className="text-blue-500 hover:underline">
               sign in
@@ -60,7 +62,10 @@ const Register = () => {
                 placeholder="Enter your password"
               />
               <ul className="text-xs text-gray-600 mt-2">
-                <li>• Your password can’t be too similar to your other personal information.</li>
+                <li>
+                  • Your password can’t be too similar to your other personal
+                  information.
+                </li>
                 <li>• Your password must contain at least 8 characters.</li>
                 <li>• Your password can’t be a commonly used password.</li>
                 <li>• Your password can’t be entirely numeric.</li>
