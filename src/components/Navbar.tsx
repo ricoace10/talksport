@@ -1,22 +1,86 @@
+import { useState } from "react";
 import Link from "next/link";
 
 const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-    <nav className="bg-black text-yellow-500 px-6 py-4 flex justify-between items-center">
+    <nav className="bg-black text-yellow-500 px-6 py-4 flex justify-between items-center relative">
+      {/* Logo */}
       <div className="text-lg font-bold">
         <Link href="/">TalkSport</Link>
       </div>
-      <div className="space-x-6">
-        <Link href="/" className="hover:text-yellow-300">Home</Link>
-        <Link href="/register" className="hover:text-yellow-300">Register</Link>
-        <Link href="/login" className="hover:text-yellow-300">Login</Link>
+
+      {/* Hamburger Icon */}
+      <div className="md:hidden">
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="focus:outline-none"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-yellow-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          </svg>
+        </button>
       </div>
-      <div className="italic text-sm">
-        <Link href="/" className="hover:text-yellow-300">All About The Beautiful Sport</Link>
+
+      {/* Links for larger screens */}
+      <div className="hidden md:flex space-x-6">
+        <Link href="/" className="hover:text-yellow-300">
+          Home
+        </Link>
+        <Link href="/register" className="hover:text-yellow-300">
+          Register
+        </Link>
+        <Link href="/login" className="hover:text-yellow-300">
+          Login
+        </Link>
       </div>
+
+      {/* Fullscreen Mobile Menu */}
+      {isMenuOpen && (
+        <div className="absolute top-0 left-0 w-full h-screen bg-black flex flex-col justify-center items-center z-50">
+          <button
+            onClick={() => setIsMenuOpen(false)}
+            className="absolute top-4 right-6 text-white text-2xl focus:outline-none"
+          >
+            &times;
+          </button>
+          <Link
+            href="/"
+            className="text-yellow-500 text-2xl mb-4 hover:text-yellow-300"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link
+            href="/register"
+            className="text-yellow-500 text-2xl mb-4 hover:text-yellow-300"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Register
+          </Link>
+          <Link
+            href="/login"
+            className="text-yellow-500 text-2xl mb-4 hover:text-yellow-300"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            Login
+          </Link>
+        </div>
+      )}
     </nav>
   );
 };
 
 export default Navbar;
-
