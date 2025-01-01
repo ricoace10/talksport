@@ -71,3 +71,37 @@ Engage with the Community:
 Like and interact with posts shared by others.
 Notifications:
 Keep track of likes and interactions on your content.
+
+
+
+
+
+                Checklist for Project Tasks:
+Planering och Research
+ 
+ Utföra en noggrann målgruppsanalys.(klart)
+ Använda ett projekthanteringsverktyg för backlog, till exempel Trello eller Kanban, för att strukturera arbetet.(klart)
+
+Design och Prototyping
+
+ Skapa wireframes och prototyp i Figma som följer UX/UI-principer.(klart)
+ Se till att designen är responsiv för minst två olika skärmstorlekar och följer WCAG 2.1-standarder.(klart)
+
+Applikationsutveckling
+ Utveckla med ett modernt JavaScript-ramverk.(klart)
+ Använd en databas för lagring och hämtning av data.(klart)
+ Implementera state-hantering och skapa dynamiska komponenter med reaktivitet och interaktivitet. (klart)
+ Följa WCAG 2.1-standarder och använda semantisk HTML. (klart)
+ För webbapp: Produkten ska vara responsiv och fungera korrekt på minst två skärmstorlekar, till exempel mobil och dator. Gränssnittet ska anpassa sig för att ge en användarvänlig upplevelse på båda dessa enheter.(klart)
+ För native mobilapp: Produkten ska anpassas till olika skärmstorlekar och enhetsorienteringar (porträtt och landskap). Gränssnittet ska fungera sömlöst på flera mobila enheter, som smartphones och surfplattor, med korrekt layout, skalning och användarvänlighet oavsett skärmstorlek.(klart)
+
+Versionshantering
+ Arbeta med Git och ha ett repo på GitHub.(klart)
+
+Slutrapport
+ Abstract på engelska.(klart)
+ Tech stack och motivering av valen.(klart)
+ Dokumentation av arbetsprocess, planering och research.(klart)
+
+Deploy
+ Ditt projekt ska vara hostat och tillgängligt för att kunna visas i en webbläsare eller simulator.(klart)
