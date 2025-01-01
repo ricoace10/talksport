@@ -10,9 +10,23 @@ const Dashboard = () => {
   // Notifications (likes)
   const [likes, setLikes] = useState(0);
 
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newPost, setNewPost] = useState({ mediaType: "IMAGE", mediaUrl: "", caption: "" });
+
   // Simulate liking a post
   const handleLike = () => {
     setLikes((prev) => prev + 1);
+  };
+
+  // Handle form submission
+  const handleUpload = () => {
+    setPosts((prevPosts) => [
+      { id: prevPosts.length + 1, ...newPost },
+      ...prevPosts,
+    ]);
+    setIsModalOpen(false);
+    setNewPost({ mediaType: "IMAGE", mediaUrl: "", caption: "" });
   };
 
   return (
@@ -23,6 +37,7 @@ const Dashboard = () => {
         <div className="flex items-center space-x-6">
           <a href="#" className="hover:text-yellow-300">For you</a>
           <a href="#" className="hover:text-yellow-300">Log out</a>
+          {/* Notification Icon */}
           <div className="relative">
             <button className="relative">
               <svg
@@ -46,6 +61,13 @@ const Dashboard = () => {
               </span>
             )}
           </div>
+          {/* Plus Button */}
+          <button
+            className="bg-yellow-500 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-lg hover:bg-yellow-600"
+            onClick={() => setIsModalOpen(true)}
+          >
+            +
+          </button>
         </div>
       </header>
 
@@ -88,6 +110,65 @@ const Dashboard = () => {
       <footer className="bg-black text-yellow-500 text-center py-4">
         TalkSport © 2024
       </footer>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
+            <h3 className="text-yellow-500 text-lg font-bold mb-4">Upload Video/Photo</h3>
+            <form onSubmit={(e) => { e.preventDefault(); handleUpload(); }}>
+              <div className="mb-4">
+                <label htmlFor="mediaType" className="block text-sm font-medium text-gray-700">Media Type</label>
+                <select
+                  id="mediaType"
+                  value={newPost.mediaType}
+                  onChange={(e) => setNewPost({ ...newPost, mediaType: e.target.value })}
+                  className="w-full mt-1 border border-gray-300 rounded-md p-2"
+                >
+                  <option value="IMAGE">Image</option>
+                  <option value="VIDEO">Video</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label htmlFor="mediaUrl" className="block text-sm font-medium text-gray-700">Media URL</label>
+                <input
+                  type="text"
+                  id="mediaUrl"
+                  value={newPost.mediaUrl}
+                  onChange={(e) => setNewPost({ ...newPost, mediaUrl: e.target.value })}
+                  placeholder="Enter media URL"
+                  className="w-full mt-1 border border-gray-300 rounded-md p-2"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="caption" className="block text-sm font-medium text-gray-700">Caption</label>
+                <textarea
+                  id="caption"
+                  value={newPost.caption}
+                  onChange={(e) => setNewPost({ ...newPost, caption: e.target.value })}
+                  placeholder="Write a caption"
+                  className="w-full mt-1 border border-gray-300 rounded-md p-2"
+                ></textarea>
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="bg-gray-300 text-gray-700 rounded-md px-4 py-2 hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-yellow-500 text-white rounded-md px-4 py-2 hover:bg-yellow-600"
+                >
+                  Upload
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
