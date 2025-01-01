@@ -1,40 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+                                TalkSport
 
-## Getting Started
+TalkSport is a web application designed for football enthusiasts and aspiring footballers to connect, share opinions, and showcase their talents. The platform aims to foster a global football community where individuals can voice their perspectives about the sport while providing young talents with an opportunity to gain visibility and increase their chances of being scouted by professional football clubs.
 
-First, run the development server:
+Features
+Community Engagement: Football fans can share opinions, insights, and discuss their favorite sport with like-minded individuals.
+Talent Showcase: Aspiring footballers can upload videos and pictures showcasing their skills, making it easier to get noticed by scouts and clubs.
+Interactive Dashboard: A personalized dashboard where users can view, like, and interact with content posted by others.
+Dynamic Content Upload: Users can upload media (photos/videos) and add captions to share with the community.
 
-```bash
+Technologies Used
+
+Frontend:
+React and Next.js (for building a dynamic and responsive user interface).
+TypeScript (to ensure type safety and scalability).
+Tailwind CSS (for responsive and elegant design).
+
+Backend:
+Prisma ORM (for data modeling and database queries).
+PostgreSQL (as the database for storing user and content data).
+
+Version Control:
+GitHub (for version control and project collaboration).
+Setup Instructions
+Prerequisites
+Node.js installed on your machine.
+PostgreSQL database set up locally or remotely.
+Basic knowledge of terminal commands.
+Installation Steps
+Clone the Repository:
+
+
+
+git clone https://github.com/your-username/talksport.git
+cd talksport
+Install Dependencies:
+
+
+
+npm install
+Set Up Environment Variables:
+
+Create a .env file in the project root.
+Add the following variables:
+env
+
+DATABASE_URL="postgresql://user:password@localhost:5432/talksport"
+NEXT_PUBLIC_API_URL="http://localhost:3000/api"
+Set Up the Database:
+
+Generate Prisma Client:
+npx prisma generate
+Apply migrations to set up the database schema:
+
+npx prisma migrate dev --name init
+Run the Development Server:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Access the Application:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open your browser and navigate to:
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
-
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+How to Use
+Sign Up:
+Create an account on the platform.
+Upload Content:
+Share videos or pictures showcasing your football skills.
+Engage with the Community:
+Like and interact with posts shared by others.
+Notifications:
+Keep track of likes and interactions on your content.
