@@ -33,10 +33,11 @@ const Dashboard = () => {
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Navbar */}
       <header className="bg-black text-yellow-500 flex justify-between items-center px-6 py-4">
-        <h1 className="text-lg font-bold">TalkSport</h1>
-        <div className="flex items-center space-x-6">
-          <a href="#" className="hover:text-yellow-300">For you</a>
-          <a href="#" className="hover:text-yellow-300">Log out</a>
+  <h1 className="text-lg font-bold">TalkSport</h1>
+  <div className="flex items-center space-x-6">
+    <a href="/dashboard" className="hover:text-yellow-300">For you</a>
+    <a href="/logout" className="hover:text-yellow-300">Log out</a>
+    <div className="relative"></div>
           {/* Notification Icon */}
           <div className="relative">
             <button className="relative">
