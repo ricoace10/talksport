@@ -1,7 +1,16 @@
 import Layout from "../components/Layout";
 import Link from "next/link";
+import { useState } from "react";
 
 const Register = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Simulate successful registration
+    setIsModalOpen(true);
+  };
+
   return (
     <Layout>
       <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -17,7 +26,7 @@ const Register = () => {
             instead.
           </p>
 
-          <form>
+          <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label
                 htmlFor="username"
@@ -96,6 +105,29 @@ const Register = () => {
           </form>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+            <h2 className="text-xl font-bold text-yellow-500 mb-4 text-center">
+              Account Created!
+            </h2>
+            <p className="text-gray-700 text-center mb-6">
+              Your account has been successfully registered. You can now log in
+              and start exploring TalkSport.
+            </p>
+            <div className="flex justify-center">
+              <Link
+                href="/login"
+                className="bg-black text-yellow-500 py-2 px-6 rounded-md hover:bg-gray-800 transition duration-200"
+              >
+                Go to Login
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };
