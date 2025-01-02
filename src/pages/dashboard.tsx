@@ -3,16 +3,34 @@ import { useState } from "react";
 const Dashboard = () => {
   // Example user content
   const [posts, setPosts] = useState([
-    { id: 1, mediaType: "IMAGE", mediaUrl: "https://via.placeholder.com/600x400", caption: "First post" },
-    { id: 2, mediaType: "VIDEO", mediaUrl: "https://www.w3schools.com/html/mov_bbb.mp4", caption: "Check out this video" },
+    {
+      id: 1,
+      mediaType: "IMAGE",
+      mediaUrl: "https://via.placeholder.com/600x400",
+      caption: "First post",
+      likes: 0,
+      isLiked: false,
+    },
+    {
+      id: 2,
+      mediaType: "VIDEO",
+      mediaUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+      caption: "Check out this video",
+      likes: 0,
+      isLiked: false,
+    },
   ]);
 
-  // Notifications (likes)
-  const [likes, setLikes] = useState(0);
+  // Notification badge count (total likes across posts)
+  const [totalLikes, setTotalLikes] = useState(0);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newPost, setNewPost] = useState({ mediaType: "IMAGE", mediaUrl: "", caption: "" });
+  const [newPost, setNewPost] = useState({
+    mediaType: "IMAGE",
+    mediaUrl: "",
+    caption: "",
+  });
 
   // Handle file upload
   const [file, setFile] = useState<File | null>(null);
@@ -27,9 +45,24 @@ const Dashboard = () => {
     }
   };
 
-  // Simulate liking a post
-  const handleLike = () => {
-    setLikes((prev) => prev + 1);
+  // Handle like functionality
+  const handleLike = (postId: number) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId
+          ? {
+              ...post,
+              likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+              isLiked: !post.isLiked,
+            }
+          : post
+      )
+    );
+    setTotalLikes((prevTotal) =>
+      posts.find((post) => post.id === postId)?.isLiked
+        ? prevTotal - 1
+        : prevTotal + 1
+    );
   };
 
   // Handle form submission
@@ -39,7 +72,7 @@ const Dashboard = () => {
       return;
     }
     setPosts((prevPosts) => [
-      { id: prevPosts.length + 1, ...newPost },
+      { id: prevPosts.length + 1, likes: 0, isLiked: false, ...newPost },
       ...prevPosts,
     ]);
     setIsModalOpen(false);
@@ -77,9 +110,9 @@ const Dashboard = () => {
                 />
               </svg>
             </button>
-            {likes > 0 && (
+            {totalLikes > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                {likes}
+                {totalLikes}
               </span>
             )}
           </div>
@@ -115,12 +148,28 @@ const Dashboard = () => {
               )}
               <div className="p-4">
                 <p className="text-gray-700">{post.caption}</p>
-                <button
-                  onClick={handleLike}
-                  className="mt-2 text-yellow-500 hover:text-yellow-300"
-                >
-                  Like
-                </button>
+                <div className="flex items-center space-x-2 mt-2">
+                  {/* Like Button */}
+                  <button onClick={() => handleLike(post.id)}>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill={post.isLiked ? "red" : "none"}
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      className={`w-5 h-5 ${
+                        post.isLiked ? "text-red-500" : "text-gray-500"
+                      }`}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5.121 21.364l-.007-.006a9.001 9.001 0 01-1.751-1.57C.465 16.68-.81 11.76 1.757 8.465 3.836 5.694 7.313 5 9.31 6.485c1.283.947 2.288 2.616 3.174 3.884.886-1.268 1.891-2.937 3.174-3.884 1.997-1.485 5.474-1.209 7.553 1.98 2.567 3.295 1.292 8.215-2.363 11.328a9.002 9.002 0 01-1.751 1.57l-.007.006L12 21.757l-6.879-6.393z"
+                      />
+                    </svg>
+                  </button>
+                  <span className="text-gray-700">{post.likes} likes</span>
+                </div>
               </div>
             </div>
           ))}
