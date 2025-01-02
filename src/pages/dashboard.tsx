@@ -24,8 +24,13 @@ const Dashboard = () => {
   // Notification badge count (total likes across posts)
   const [totalLikes, setTotalLikes] = useState(0);
 
-  // Modal state
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Modal states
+  const [isModalOpen, setIsModalOpen] = useState(false); // For creating new posts
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // For editing posts
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false); // For confirming deletion
+  const [menuOpenPostId, setMenuOpenPostId] = useState(null); // To track which post's menu is open
+  const [currentPost, setCurrentPost] = useState(null); // Current post being edited or deleted
+
   const [newPost, setNewPost] = useState({
     mediaType: "IMAGE",
     mediaUrl: "",
@@ -65,7 +70,7 @@ const Dashboard = () => {
     );
   };
 
-  // Handle form submission
+  // Handle adding a new post
   const handleUpload = () => {
     if (!newPost.mediaUrl) {
       alert("Please upload a file or provide a URL.");
@@ -78,6 +83,20 @@ const Dashboard = () => {
     setIsModalOpen(false);
     setNewPost({ mediaType: "IMAGE", mediaUrl: "", caption: "" });
     setFile(null); // Clear the selected file
+  };
+
+  // Handle delete post
+  const handleDelete = () => {
+    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== currentPost.id));
+    setIsDeleteConfirmModalOpen(false);
+    setMenuOpenPostId(null);
+  };
+
+  // Handle edit post
+  const handleEdit = (post) => {
+    setCurrentPost(post);
+    setIsEditModalOpen(true);
+    setMenuOpenPostId(null);
   };
 
   return (
@@ -116,13 +135,6 @@ const Dashboard = () => {
               </span>
             )}
           </div>
-          {/* Plus Button */}
-          <button
-            className="bg-yellow-500 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-lg hover:bg-yellow-600"
-            onClick={() => setIsModalOpen(true)}
-          >
-            +
-          </button>
         </div>
       </header>
 
@@ -133,7 +145,7 @@ const Dashboard = () => {
         </h2>
         <div className="max-w-2xl mx-auto space-y-6">
           {posts.map((post) => (
-            <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden relative">
               {post.mediaType === "IMAGE" ? (
                 <img
                   src={post.mediaUrl}
@@ -171,6 +183,36 @@ const Dashboard = () => {
                   <span className="text-gray-700">{post.likes} likes</span>
                 </div>
               </div>
+              {/* Three-dot Menu */}
+              <div className="absolute bottom-2 right-2">
+                <button
+                  onClick={() => setMenuOpenPostId(post.id)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  •••
+                </button>
+              </div>
+
+              {/* Menu Modal */}
+              {menuOpenPostId === post.id && (
+                <div className="absolute right-2 bottom-10 bg-white shadow-lg rounded-md z-10">
+                  <button
+                    className="px-4 py-2 text-blue-500 hover:bg-gray-100 w-full text-left"
+                    onClick={() => handleEdit(post)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="px-4 py-2 text-red-500 hover:bg-gray-100 w-full text-left"
+                    onClick={() => {
+                      setCurrentPost(post);
+                      setIsDeleteConfirmModalOpen(true);
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -181,72 +223,70 @@ const Dashboard = () => {
         TalkSport © 2024
       </footer>
 
-      {/* Modal */}
-      {isModalOpen && (
+      {/* Confirm Delete Modal */}
+      {isDeleteConfirmModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-sm rounded-lg shadow-lg p-6">
+            <h3 className="text-red-500 text-lg font-bold mb-4">Confirm Delete</h3>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to delete this post?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                className="bg-gray-300 text-gray-700 rounded-md px-4 py-2 hover:bg-gray-400"
+                onClick={() => setIsDeleteConfirmModalOpen(false)}
+              >
+                No
+              </button>
+              <button
+                className="bg-red-500 text-white rounded-md px-4 py-2 hover:bg-red-600"
+                onClick={handleDelete}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {isEditModalOpen && currentPost && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
-            <h3 className="text-yellow-500 text-lg font-bold mb-4">Upload Video/Photo</h3>
+            <h3 className="text-yellow-500 text-lg font-bold mb-4">Edit Post</h3>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleUpload();
+                setPosts((prevPosts) =>
+                  prevPosts.map((post) =>
+                    post.id === currentPost.id ? { ...post, ...currentPost } : post
+                  )
+                );
+                setIsEditModalOpen(false);
+                setCurrentPost(null);
               }}
             >
               <div className="mb-4">
                 <label
-                  htmlFor="mediaType"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Media Type
-                </label>
-                <select
-                  id="mediaType"
-                  value={newPost.mediaType}
-                  onChange={(e) =>
-                    setNewPost({ ...newPost, mediaType: e.target.value })
-                  }
-                  className="w-full mt-1 border border-gray-300 rounded-md p-2"
-                >
-                  <option value="IMAGE">Image</option>
-                  <option value="VIDEO">Video</option>
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="mediaUrl"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Media URL or File
-                </label>
-                <input
-                  type="file"
-                  id="mediaFile"
-                  accept="image/*,video/*"
-                  onChange={handleFileChange}
-                  className="w-full mt-1 border border-gray-300 rounded-md p-2"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="caption"
+                  htmlFor="editCaption"
                   className="block text-sm font-medium text-gray-700"
                 >
                   Caption
                 </label>
                 <textarea
-                  id="caption"
-                  value={newPost.caption}
+                  id="editCaption"
+                  value={currentPost.caption}
                   onChange={(e) =>
-                    setNewPost({ ...newPost, caption: e.target.value })
+                    setCurrentPost({ ...currentPost, caption: e.target.value })
                   }
-                  placeholder="Write a caption"
+                  placeholder="Edit your caption"
                   className="w-full mt-1 border border-gray-300 rounded-md p-2"
                 ></textarea>
               </div>
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => setIsEditModalOpen(false)}
                   className="bg-gray-300 text-gray-700 rounded-md px-4 py-2 hover:bg-gray-400"
                 >
                   Cancel
@@ -255,7 +295,7 @@ const Dashboard = () => {
                   type="submit"
                   className="bg-yellow-500 text-white rounded-md px-4 py-2 hover:bg-yellow-600"
                 >
-                  Upload
+                  Save
                 </button>
               </div>
             </form>
