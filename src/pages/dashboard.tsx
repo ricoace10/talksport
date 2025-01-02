@@ -14,6 +14,19 @@ const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({ mediaType: "IMAGE", mediaUrl: "", caption: "" });
 
+  // Handle file upload
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      setNewPost({
+        ...newPost,
+        mediaUrl: URL.createObjectURL(e.target.files[0]),
+      });
+    }
+  };
+
   // Simulate liking a post
   const handleLike = () => {
     setLikes((prev) => prev + 1);
@@ -21,23 +34,31 @@ const Dashboard = () => {
 
   // Handle form submission
   const handleUpload = () => {
+    if (!newPost.mediaUrl) {
+      alert("Please upload a file or provide a URL.");
+      return;
+    }
     setPosts((prevPosts) => [
       { id: prevPosts.length + 1, ...newPost },
       ...prevPosts,
     ]);
     setIsModalOpen(false);
     setNewPost({ mediaType: "IMAGE", mediaUrl: "", caption: "" });
+    setFile(null); // Clear the selected file
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Navbar */}
       <header className="bg-black text-yellow-500 flex justify-between items-center px-6 py-4">
-  <h1 className="text-lg font-bold">TalkSport</h1>
-  <div className="flex items-center space-x-6">
-    <a href="/dashboard" className="hover:text-yellow-300">For you</a>
-    <a href="/logout" className="hover:text-yellow-300">Log out</a>
-    <div className="relative"></div>
+        <h1 className="text-lg font-bold">TalkSport</h1>
+        <div className="flex items-center space-x-6">
+          <a href="/dashboard" className="hover:text-yellow-300">
+            For you
+          </a>
+          <a href="/logout" className="hover:text-yellow-300">
+            Log out
+          </a>
           {/* Notification Icon */}
           <div className="relative">
             <button className="relative">
@@ -74,7 +95,9 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="flex-grow px-4 py-6">
-        <h2 className="text-4xl text-yellow-500 font-bold text-center mb-8">TalkSport</h2>
+        <h2 className="text-4xl text-yellow-500 font-bold text-center mb-8">
+          TalkSport
+        </h2>
         <div className="max-w-2xl mx-auto space-y-6">
           {posts.map((post) => (
             <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -85,10 +108,7 @@ const Dashboard = () => {
                   className="w-full h-auto object-cover"
                 />
               ) : (
-                <video
-                  controls
-                  className="w-full h-auto object-cover"
-                >
+                <video controls className="w-full h-auto object-cover">
                   <source src={post.mediaUrl} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
@@ -117,13 +137,25 @@ const Dashboard = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
             <h3 className="text-yellow-500 text-lg font-bold mb-4">Upload Video/Photo</h3>
-            <form onSubmit={(e) => { e.preventDefault(); handleUpload(); }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleUpload();
+              }}
+            >
               <div className="mb-4">
-                <label htmlFor="mediaType" className="block text-sm font-medium text-gray-700">Media Type</label>
+                <label
+                  htmlFor="mediaType"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Media Type
+                </label>
                 <select
                   id="mediaType"
                   value={newPost.mediaType}
-                  onChange={(e) => setNewPost({ ...newPost, mediaType: e.target.value })}
+                  onChange={(e) =>
+                    setNewPost({ ...newPost, mediaType: e.target.value })
+                  }
                   className="w-full mt-1 border border-gray-300 rounded-md p-2"
                 >
                   <option value="IMAGE">Image</option>
@@ -131,22 +163,33 @@ const Dashboard = () => {
                 </select>
               </div>
               <div className="mb-4">
-                <label htmlFor="mediaUrl" className="block text-sm font-medium text-gray-700">Media URL</label>
+                <label
+                  htmlFor="mediaUrl"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Media URL or File
+                </label>
                 <input
-                  type="text"
-                  id="mediaUrl"
-                  value={newPost.mediaUrl}
-                  onChange={(e) => setNewPost({ ...newPost, mediaUrl: e.target.value })}
-                  placeholder="Enter media URL"
+                  type="file"
+                  id="mediaFile"
+                  accept="image/*,video/*"
+                  onChange={handleFileChange}
                   className="w-full mt-1 border border-gray-300 rounded-md p-2"
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="caption" className="block text-sm font-medium text-gray-700">Caption</label>
+                <label
+                  htmlFor="caption"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Caption
+                </label>
                 <textarea
                   id="caption"
                   value={newPost.caption}
-                  onChange={(e) => setNewPost({ ...newPost, caption: e.target.value })}
+                  onChange={(e) =>
+                    setNewPost({ ...newPost, caption: e.target.value })
+                  }
                   placeholder="Write a caption"
                   className="w-full mt-1 border border-gray-300 rounded-md p-2"
                 ></textarea>
