@@ -1,6 +1,28 @@
+import { useState } from "react";
+import axios from "axios";
 import Layout from "../components/Layout";
 
 const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post("/api/auth/login", { email, password });
+      setSuccess(response.data.message);
+      setError(null);
+
+      console.log("User Info:", response.data.user);
+    } catch (err) {
+      setError(err.response?.data?.error || "An error occurred");
+      setSuccess(null);
+    }
+  };
+
   return (
     <Layout>
       <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -9,7 +31,10 @@ const Login = () => {
             TalkSport
           </h1>
 
-          <form>
+          <form onSubmit={handleSubmit}>
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+            {success && <p className="text-green-500 mb-4">{success}</p>}
+
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -20,6 +45,8 @@ const Login = () => {
               <input
                 type="email"
                 id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="Enter your email"
               />
@@ -35,6 +62,8 @@ const Login = () => {
               <input
                 type="password"
                 id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="Enter your password"
               />
