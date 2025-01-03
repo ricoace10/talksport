@@ -1,14 +1,41 @@
+import axios from "axios";
 import Layout from "../components/Layout";
 import Link from "next/link";
 import { useState } from "react";
 
 const Register = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate successful registration
-    setIsModalOpen(true);
+
+    const { name, email, password, confirmPassword } = formData;
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      // Make the API request
+      const response = await axios.post("/api/register", { name, email, password });
+      if (response.status === 201) {
+        setIsModalOpen(true); // Open success modal
+      }
+    } catch (error: any) {
+      console.error("Error registering user:", error.response?.data || error.message);
+      alert(error.response?.data?.error || "An error occurred.");
+    }
   };
 
   return (
@@ -28,25 +55,21 @@ const Register = () => {
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                 Username:
               </label>
               <input
                 type="text"
-                id="username"
+                id="name"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="Enter your username"
+                value={formData.name}
+                onChange={handleChange}
               />
             </div>
 
             <div className="mb-4">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
                 Email:
               </label>
               <input
@@ -54,14 +77,13 @@ const Register = () => {
                 id="email"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
               />
             </div>
 
             <div className="mb-4">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password:
               </label>
               <input
@@ -69,30 +91,22 @@ const Register = () => {
                 id="password"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
               />
-              <ul className="text-xs text-gray-600 mt-2">
-                <li>
-                  • Your password can’t be too similar to your other personal
-                  information.
-                </li>
-                <li>• Your password must contain at least 8 characters.</li>
-                <li>• Your password can’t be a commonly used password.</li>
-                <li>• Your password can’t be entirely numeric.</li>
-              </ul>
             </div>
 
-            <div className="mb-6">
-              <label
-                htmlFor="confirm-password"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Password (again):
+            <div className="mb-4">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                Confirm Password:
               </label>
               <input
                 type="password"
-                id="confirm-password"
+                id="confirmPassword"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="Confirm your password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
               />
             </div>
 

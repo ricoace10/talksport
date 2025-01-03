@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcrypt"; // Optional: Use for hashed passwords
-import prisma from "../../../lib/prisma";
+import prisma from "../../../../lib/prisma";
 ;
 
 // Adjust path based on your project structure
