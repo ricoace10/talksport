@@ -37,7 +37,7 @@ const Register = () => {
               <input
                 type="text"
                 id="username"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Enter your username"
               />
             </div>
@@ -52,7 +52,7 @@ const Register = () => {
               <input
                 type="email"
                 id="email"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Enter your email"
               />
             </div>
@@ -67,7 +67,7 @@ const Register = () => {
               <input
                 type="password"
                 id="password"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Enter your password"
               />
               <ul className="text-xs text-gray-600 mt-2">
@@ -91,7 +91,7 @@ const Register = () => {
               <input
                 type="password"
                 id="confirm-password"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Confirm your password"
               />
             </div>
