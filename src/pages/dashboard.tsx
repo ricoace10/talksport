@@ -240,7 +240,7 @@ const Dashboard = () => {
                     setNewPost({ ...newPost, caption: e.target.value })
                   }
                   placeholder="Write a caption"
-                  className="w-full mt-1 border border-gray-300 rounded-md p-2"
+                  className="w-full mt-1 border border-gray-300 rounded-md p-2 text-black font-medium"
                 ></textarea>
               </div>
               <div className="flex justify-end space-x-4">
