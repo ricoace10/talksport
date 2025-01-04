@@ -1,19 +1,26 @@
-
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Post, User} from "../types";
+
+interface Like {
+  userId: number;
+  postId: number;
+}
+
 
 const Dashboard = () => {
-  const [posts, setPosts] = useState<any[]>([]);
-  const [totalLikes, setTotalLikes] = useState(0);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [totalLikes, setTotalLikes] = useState<number>(0);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   // Create Post Modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [newPost, setNewPost] = useState({
     mediaType: "PICTURE",
     mediaUrl: "",
     caption: "",
   });
-  const [file, setFile] = useState<File | null>(null);
 
   // Menu, Delete, and Edit States
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
@@ -25,7 +32,7 @@ const Dashboard = () => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
+      setCurrentUser(JSON.parse(storedUser) as User);
     }
 
     // Fetch all posts from all users
@@ -33,12 +40,15 @@ const Dashboard = () => {
       try {
         const response = await fetch("/api/posts");
         const result = await response.json();
+
         if (response.ok) {
-          setPosts(result.data);
+          // Cast the data to Post[] if it matches your shape
+          const allPosts: Post[] = result.data;
+          setPosts(allPosts);
 
           // Calculate total likes
           let sum = 0;
-          result.data.forEach((post: any) => {
+          allPosts.forEach((post: Post) => {
             sum += post.likes?.length || 0;
           });
           setTotalLikes(sum);
@@ -87,20 +97,21 @@ const Dashboard = () => {
 
       setIsModalOpen(false);
       setNewPost({ mediaType: "PICTURE", mediaUrl: "", caption: "" });
-      setFile(null);
     } catch (error) {
       console.error("Error creating post:", error);
       alert("An unexpected error occurred while creating a post.");
     }
   };
 
+  // 2a. Handle file selection (optional)
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      setNewPost({
-        ...newPost,
-        mediaUrl: URL.createObjectURL(e.target.files[0]),
-      });
+      // If you eventually upload to a server, store the actual File.
+      // For now, we just generate a local preview URL:
+      setNewPost((prev) => ({
+        ...prev,
+        mediaUrl: URL.createObjectURL(e.target.files![0]),
+      }));
     }
   };
 
@@ -125,17 +136,17 @@ const Dashboard = () => {
       }
 
       setPosts((prevPosts) =>
-        prevPosts.map((post) => {
+        prevPosts.map((post: Post) => {
           if (post.id === postId) {
             const userAlreadyLiked = post.likes?.some(
-              (like: any) => like.userId === currentUser.id
+              (like: Like) => like.userId === currentUser.id
             );
             if (userAlreadyLiked) {
               // remove the like
               return {
                 ...post,
                 likes: post.likes.filter(
-                  (like: any) => like.userId !== currentUser.id
+                  (like: Like) => like.userId !== currentUser.id
                 ),
               };
             } else {
@@ -157,8 +168,9 @@ const Dashboard = () => {
       setTotalLikes((prevTotal) => {
         const thisPost = posts.find((p) => p.id === postId);
         if (!thisPost) return prevTotal;
+
         const wasLiked = thisPost.likes?.some(
-          (like: any) => like.userId === currentUser.id
+          (like: Like) => like.userId === currentUser.id
         );
         return wasLiked ? prevTotal - 1 : prevTotal + 1;
       });
@@ -237,12 +249,12 @@ const Dashboard = () => {
       <header className="bg-black text-yellow-500 flex justify-between items-center px-6 py-4">
         <h1 className="text-lg font-bold">TalkSport</h1>
         <div className="flex items-center space-x-6">
-          <a href="/dashboard" className="hover:text-yellow-300">
+          <Link href="/dashboard" className="hover:text-yellow-300">
             For you
-          </a>
-          <a href="/logout" className="hover:text-yellow-300">
+          </Link>
+          <Link href="/logout" className="hover:text-yellow-300">
             Log out
-          </a>
+          </Link>
           {/* Notification Icon for total likes */}
           <div className="relative">
             <button className="relative">
@@ -283,9 +295,9 @@ const Dashboard = () => {
           TalkSport
         </h2>
         <div className="max-w-2xl mx-auto space-y-6">
-          {posts.map((post) => {
+          {posts.map((post: Post) => {
             const isLiked = post.likes?.some(
-              (like: any) => like.userId === currentUser?.id
+              (like: Like) => like.userId === currentUser?.id
             );
             const isOwner = post.authorId === currentUser?.id;
 
@@ -296,9 +308,12 @@ const Dashboard = () => {
               >
                 {/* Media */}
                 {post.mediaType === "PICTURE" ? (
-                  <img
+                  <Image
                     src={post.mediaUrl}
                     alt="User Content"
+                    // Next.js Image requires width/height or layout="fill"
+                    width={600}
+                    height={400}
                     className="w-full h-auto object-cover"
                   />
                 ) : (
@@ -344,12 +359,10 @@ const Dashboard = () => {
                           onClick={() => toggleMenu(post.id)}
                           className="bg-white text-gray-700 hover:text-black p-1 rounded-full shadow-md"
                         >
-                          {/* 3 dots symbol */}
                           ⋯
                         </button>
                         {menuOpenId === post.id && (
                           <div className="absolute bottom-10 right-0 bg-white border border-gray-200 shadow-md rounded-md p-2 z-50">
-                            {/* Edit (yellow) */}
                             <button
                               className="block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 text-yellow-500"
                               onClick={() =>
@@ -358,7 +371,6 @@ const Dashboard = () => {
                             >
                               Edit
                             </button>
-                            {/* Delete (red) */}
                             <button
                               className="block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 text-red-500"
                               onClick={() => handleDeleteConfirm(post.id)}
@@ -406,7 +418,10 @@ const Dashboard = () => {
                   id="mediaType"
                   value={newPost.mediaType}
                   onChange={(e) =>
-                    setNewPost({ ...newPost, mediaType: e.target.value })
+                    setNewPost((prev) => ({
+                      ...prev,
+                      mediaType: e.target.value,
+                    }))
                   }
                   className="w-full mt-1 border border-gray-300 rounded-md p-2"
                 >
@@ -440,7 +455,10 @@ const Dashboard = () => {
                   id="caption"
                   value={newPost.caption}
                   onChange={(e) =>
-                    setNewPost({ ...newPost, caption: e.target.value })
+                    setNewPost((prev) => ({
+                      ...prev,
+                      caption: e.target.value,
+                    }))
                   }
                   placeholder="Write a caption"
                   className="w-full mt-1 border border-gray-300 rounded-md p-2 text-black font-medium"

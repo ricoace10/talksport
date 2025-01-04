@@ -9,12 +9,18 @@ export interface User {
   
   export interface Post {
     id: number;
-    mediaType: "IMAGE" | "VIDEO";
+    mediaType: "PICTURE" | "VIDEO";
     mediaUrl: string;
     caption?: string;
-    likes: number;
+    likes: Like[];
     isLiked: boolean;
+    authorId: string | number ;
   }
+
+  interface Like {
+    userId: number;
+    postId: number;
+  } 
   
   export interface ApiResponse<T> {
     success: boolean;
@@ -22,3 +28,4 @@ export interface User {
     message?: string;
   }
   
+export type MediaType = "VIDEO" | "PICTURE";

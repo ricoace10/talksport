@@ -1,5 +1,4 @@
 // pages/api/auth/register.ts
-
 import type { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcrypt";
 import { PrismaClient } from "@prisma/client";
@@ -16,7 +15,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  // We only allow POST requests
+  // Only allow POST requests
   if (req.method !== "POST") {
     return res.status(405).json({
       success: false,
@@ -25,10 +24,11 @@ export default async function handler(
   }
 
   try {
-    const { name, email, password } = req.body as RegisterRequestBody;
+    // Rename the request-body 'password' to avoid re-declaration
+    const { name, email, password: rawPassword } = req.body as RegisterRequestBody;
 
     // Basic validation
-    if (!name || !email || !password) {
+    if (!name || !email || !rawPassword) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields: name, email, or password.",
@@ -48,7 +48,7 @@ export default async function handler(
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
 
     // Create the user in the database
     const newUser = await prisma.user.create({
@@ -59,9 +59,10 @@ export default async function handler(
       },
     });
 
-    // We can omit the password from the response if desired
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = newUser;
 
+    // Return user data without the password
     return res.status(201).json({
       success: true,
       message: "User registered successfully.",

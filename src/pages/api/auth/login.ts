@@ -23,17 +23,18 @@ export default async function handler(
   }
 
   try {
-    const { email, password } = req.body as LoginRequestBody;
+    // Rename the request-body 'password' to avoid re-declaration
+    const { email, password: inputPassword } = req.body as LoginRequestBody;
 
     // Basic validation
-    if (!email || !password) {
+    if (!email || !inputPassword) {
       return res.status(400).json({
         success: false,
         message: "Email and password are required.",
       });
     }
 
-    // Find user by email in the database
+    // Find user by email
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -45,9 +46,8 @@ export default async function handler(
       });
     }
 
-    // Compare the provided password with the stored hashed password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
+    // Compare provided password with stored hashed password
+    const isPasswordValid = await bcrypt.compare(inputPassword, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
@@ -55,9 +55,10 @@ export default async function handler(
       });
     }
 
-    // Credentials are valid
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
 
+    // Return user data without the password
     return res.status(200).json({
       success: true,
       message: "Login successful.",
