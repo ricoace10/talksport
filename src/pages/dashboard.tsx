@@ -1,4 +1,4 @@
-// pages/dashboard.tsx
+
 import { useState, useEffect } from "react";
 
 const Dashboard = () => {
@@ -6,8 +6,8 @@ const Dashboard = () => {
   const [totalLikes, setTotalLikes] = useState(0);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  // Modal states
-  const [isModalOpen, setIsModalOpen] = useState(false); // For creating new post
+ 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({
     mediaType: "PICTURE",
     mediaUrl: "",
@@ -15,26 +15,28 @@ const Dashboard = () => {
   });
   const [file, setFile] = useState<File | null>(null);
 
-  // Edit & Delete states
-  const [menuOpenId, setMenuOpenId] = useState<number | null>(null); // which post's 3-dot menu is open
-  const [deleteModalId, setDeleteModalId] = useState<number | null>(null); // which post is being deleted
-  const [editModalId, setEditModalId] = useState<number | null>(null); // which post is being edited
-  const [editCaption, setEditCaption] = useState<string>(""); // store new caption
+  
+  const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+  const [deleteModalId, setDeleteModalId] = useState<number | null>(null);
+  const [editModalId, setEditModalId] = useState<number | null>(null);
+  const [editCaption, setEditCaption] = useState<string>("");
 
-  // 1. On mount, retrieve user & fetch posts
+  
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
 
+   
     const fetchPosts = async () => {
       try {
         const response = await fetch("/api/posts");
         const result = await response.json();
         if (response.ok) {
           setPosts(result.data);
-          // Calculate total likes
+
+         
           let sum = 0;
           result.data.forEach((post: any) => {
             sum += post.likes?.length || 0;
@@ -51,7 +53,7 @@ const Dashboard = () => {
     fetchPosts();
   }, []);
 
-  // 2. Create new post
+  
   const handleUpload = async () => {
     if (!newPost.mediaUrl) {
       alert("Please provide a file or media URL.");
@@ -73,14 +75,16 @@ const Dashboard = () => {
           caption: newPost.caption,
         }),
       });
-
       const data = await response.json();
+
       if (!response.ok) {
         alert(data.message || "Error uploading post.");
         return;
       }
 
+      
       setPosts((prev) => [data.data, ...prev]);
+
       setIsModalOpen(false);
       setNewPost({ mediaType: "PICTURE", mediaUrl: "", caption: "" });
       setFile(null);
@@ -90,7 +94,6 @@ const Dashboard = () => {
     }
   };
 
-  // File selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
@@ -101,7 +104,7 @@ const Dashboard = () => {
     }
   };
 
-  // 3. Toggling like/unlike
+  
   const handleLike = async (postId: number) => {
     if (!currentUser?.id) {
       alert("No current user found. Please log in again.");
@@ -128,7 +131,7 @@ const Dashboard = () => {
               (like: any) => like.userId === currentUser.id
             );
             if (userAlreadyLiked) {
-              // remove the like
+             
               return {
                 ...post,
                 likes: post.likes.filter(
@@ -136,10 +139,13 @@ const Dashboard = () => {
                 ),
               };
             } else {
-              // add a like
+              
               return {
                 ...post,
-                likes: [...(post.likes || []), { userId: currentUser.id, postId }],
+                likes: [
+                  ...(post.likes || []),
+                  { userId: currentUser.id, postId },
+                ],
               };
             }
           }
@@ -147,7 +153,7 @@ const Dashboard = () => {
         })
       );
 
-      // Recalc total likes quick approach
+     
       setTotalLikes((prevTotal) => {
         const thisPost = posts.find((p) => p.id === postId);
         if (!thisPost) return prevTotal;
@@ -162,12 +168,12 @@ const Dashboard = () => {
     }
   };
 
-  // 4. 3-dot menu toggle
+  
   const toggleMenu = (postId: number) => {
     setMenuOpenId((prev) => (prev === postId ? null : postId));
   };
 
-  // 5. Deleting a post
+  
   const handleDeleteConfirm = (postId: number) => {
     setDeleteModalId(postId);
     setMenuOpenId(null);
@@ -184,7 +190,7 @@ const Dashboard = () => {
         alert(data.message || "Error deleting post.");
         return;
       }
-      // remove from local state
+      
       setPosts((prev) => prev.filter((p) => p.id !== deleteModalId));
       setDeleteModalId(null);
     } catch (error) {
@@ -193,7 +199,7 @@ const Dashboard = () => {
     }
   };
 
-  // 6. Editing a post
+  
   const handleEdit = (postId: number, existingCaption: string) => {
     setEditModalId(postId);
     setEditCaption(existingCaption || "");
@@ -213,7 +219,7 @@ const Dashboard = () => {
         alert(data.message || "Error updating post.");
         return;
       }
-      // Update local state
+      
       setPosts((prevPosts) =>
         prevPosts.map((post) => (post.id === editModalId ? data.data : post))
       );
@@ -237,6 +243,7 @@ const Dashboard = () => {
           <a href="/logout" className="hover:text-yellow-300">
             Log out
           </a>
+          {/* Notification Icon for total likes */}
           <div className="relative">
             <button className="relative">
               <svg
@@ -260,7 +267,7 @@ const Dashboard = () => {
               </span>
             )}
           </div>
-          {/* Plus Button */}
+          {/* Plus Button (create post) */}
           <button
             className="bg-yellow-500 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-lg hover:bg-yellow-600"
             onClick={() => setIsModalOpen(true)}
@@ -287,7 +294,7 @@ const Dashboard = () => {
                 key={post.id}
                 className="bg-white rounded-lg shadow-md overflow-hidden relative"
               >
-                {/* Media (Image or Video) */}
+                {/* Media */}
                 {post.mediaType === "PICTURE" ? (
                   <img
                     src={post.mediaUrl}
@@ -301,11 +308,11 @@ const Dashboard = () => {
                   </video>
                 )}
 
-                {/* Post Info & Like Button */}
                 <div className="p-4">
                   <p className="text-gray-700">{post.caption}</p>
+
                   <div className="flex items-center justify-between mt-2">
-                    {/* Like Section */}
+                    {/* Like Button */}
                     <div className="flex items-center space-x-2">
                       <button onClick={() => handleLike(post.id)}>
                         <svg
@@ -330,28 +337,28 @@ const Dashboard = () => {
                       </span>
                     </div>
 
-                    {/* 3-dot menu if current user is owner, now at bottom-right */}
+                    {/* 3-dot menu for the owner */}
                     {isOwner && (
                       <div className="relative">
                         <button
                           onClick={() => toggleMenu(post.id)}
                           className="bg-white text-gray-700 hover:text-black p-1 rounded-full shadow-md"
                         >
-                          {/* 3 dot symbol */}
+                          {/* 3 dots symbol */}
                           ⋯
                         </button>
-
-                        {/* The dropdown menu, anchored above the button */}
                         {menuOpenId === post.id && (
                           <div className="absolute bottom-10 right-0 bg-white border border-gray-200 shadow-md rounded-md p-2 z-50">
-                            {/* Edit button in yellow */}
+                            {/* Edit (yellow) */}
                             <button
                               className="block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 text-yellow-500"
-                              onClick={() => handleEdit(post.id, post.caption)}
+                              onClick={() =>
+                                handleEdit(post.id, post.caption || "")
+                              }
                             >
                               Edit
                             </button>
-                            {/* Delete button in red */}
+                            {/* Delete (red) */}
                             <button
                               className="block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 text-red-500"
                               onClick={() => handleDeleteConfirm(post.id)}
@@ -375,9 +382,7 @@ const Dashboard = () => {
         TalkSport © 2024
       </footer>
 
-      {/* === Modals === */}
-
-      {/* Upload Post Modal */}
+      {/* Upload New Post Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
@@ -409,7 +414,6 @@ const Dashboard = () => {
                   <option value="VIDEO">Video</option>
                 </select>
               </div>
-
               <div className="mb-4">
                 <label
                   htmlFor="mediaFile"
@@ -425,7 +429,6 @@ const Dashboard = () => {
                   className="w-full mt-1 border border-gray-300 rounded-md p-2"
                 />
               </div>
-
               <div className="mb-4">
                 <label
                   htmlFor="caption"
@@ -443,7 +446,6 @@ const Dashboard = () => {
                   className="w-full mt-1 border border-gray-300 rounded-md p-2 text-black font-medium"
                 />
               </div>
-
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"

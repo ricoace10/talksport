@@ -1,4 +1,4 @@
-// pages/login.tsx
+
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Layout from "../components/Layout";
@@ -35,10 +35,10 @@ const Login = () => {
         return;
       }
 
-      // On success: store user data in localStorage
+     
       localStorage.setItem("user", JSON.stringify(data.data));
 
-      // Redirect to dashboard
+     
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
