@@ -1,37 +1,37 @@
-// pages/register.tsx
+
 
 import { useState } from "react";
 import Link from "next/link";
 import Layout from "../components/Layout";
 
 const Register = () => {
-  // Controls whether the success modal is visible
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Submit handler for the registration form
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Extract form values using named form elements
+    
     const name = (e.currentTarget.elements.namedItem("username") as HTMLInputElement).value;
     const email = (e.currentTarget.elements.namedItem("email") as HTMLInputElement).value;
     const password = (e.currentTarget.elements.namedItem("password") as HTMLInputElement).value;
     const confirmPassword = (e.currentTarget.elements.namedItem("confirm-password") as HTMLInputElement).value;
 
-    // Very basic validation
+   
     if (!name || !email || !password || !confirmPassword) {
       alert("Please fill in all required fields.");
       return;
     }
 
-    // Check if password and confirm password match
+    
     if (password !== confirmPassword) {
       alert("Passwords do not match. Please try again.");
       return;
     }
 
     try {
-      // Call your API endpoint to register the user
+     
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
@@ -42,13 +42,13 @@ const Register = () => {
 
       const data = await response.json();
 
-      // If registration failed, display the error message
+     
       if (!response.ok) {
         alert(data.message || "An error occurred during registration.");
         return;
       }
 
-      // If successful, open the success modal
+      
       setIsModalOpen(true);
     } catch (error) {
       console.error("Registration error:", error);

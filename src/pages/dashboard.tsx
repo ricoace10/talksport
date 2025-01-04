@@ -1,4 +1,4 @@
-// pages/dashboard.tsx
+
 import { useState, useEffect } from "react";
 
 const Dashboard = () => {
@@ -6,31 +6,37 @@ const Dashboard = () => {
   const [totalLikes, setTotalLikes] = useState(0);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
-  // Modal state
+ 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({
-    mediaType: "PICTURE", // must match your enum: "VIDEO" or "PICTURE"
+    mediaType: "PICTURE",
     mediaUrl: "",
     caption: "",
   });
   const [file, setFile] = useState<File | null>(null);
 
-  // 1. On mount, get the user from localStorage & fetch posts
+  
+  const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
+  const [deleteModalId, setDeleteModalId] = useState<number | null>(null);
+  const [editModalId, setEditModalId] = useState<number | null>(null);
+  const [editCaption, setEditCaption] = useState<string>("");
+
+  
   useEffect(() => {
-    // Retrieve user from local storage
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
 
-    // Fetch all posts
+   
     const fetchPosts = async () => {
       try {
         const response = await fetch("/api/posts");
         const result = await response.json();
         if (response.ok) {
           setPosts(result.data);
-          // Calculate total likes
+
+         
           let sum = 0;
           result.data.forEach((post: any) => {
             sum += post.likes?.length || 0;
@@ -47,7 +53,7 @@ const Dashboard = () => {
     fetchPosts();
   }, []);
 
-  // 2. Create a new post
+  
   const handleUpload = async () => {
     if (!newPost.mediaUrl) {
       alert("Please provide a file or media URL.");
@@ -69,16 +75,15 @@ const Dashboard = () => {
           caption: newPost.caption,
         }),
       });
-
       const data = await response.json();
+
       if (!response.ok) {
         alert(data.message || "Error uploading post.");
         return;
       }
 
-      // The new post is in data.data
-      const createdPost = data.data; // includes likes: []
-      setPosts((prev) => [createdPost, ...prev]);
+      
+      setPosts((prev) => [data.data, ...prev]);
 
       setIsModalOpen(false);
       setNewPost({ mediaType: "PICTURE", mediaUrl: "", caption: "" });
@@ -89,7 +94,6 @@ const Dashboard = () => {
     }
   };
 
-  // 3. Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
@@ -100,7 +104,7 @@ const Dashboard = () => {
     }
   };
 
-  // 4. Toggle like/unlike
+  
   const handleLike = async (postId: number) => {
     if (!currentUser?.id) {
       alert("No current user found. Please log in again.");
@@ -120,16 +124,14 @@ const Dashboard = () => {
         return;
       }
 
-      // Update local state
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post.id === postId) {
             const userAlreadyLiked = post.likes?.some(
               (like: any) => like.userId === currentUser.id
             );
-
             if (userAlreadyLiked) {
-              // Remove the user's like
+             
               return {
                 ...post,
                 likes: post.likes.filter(
@@ -137,10 +139,13 @@ const Dashboard = () => {
                 ),
               };
             } else {
-              // Add a new like
+              
               return {
                 ...post,
-                likes: [...(post.likes || []), { userId: currentUser.id, postId }],
+                likes: [
+                  ...(post.likes || []),
+                  { userId: currentUser.id, postId },
+                ],
               };
             }
           }
@@ -148,7 +153,7 @@ const Dashboard = () => {
         })
       );
 
-      // Recalc total likes (quick approach)
+     
       setTotalLikes((prevTotal) => {
         const thisPost = posts.find((p) => p.id === postId);
         if (!thisPost) return prevTotal;
@@ -160,6 +165,69 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error toggling like:", error);
       alert("An unexpected error occurred while toggling like.");
+    }
+  };
+
+  
+  const toggleMenu = (postId: number) => {
+    setMenuOpenId((prev) => (prev === postId ? null : postId));
+  };
+
+  
+  const handleDeleteConfirm = (postId: number) => {
+    setDeleteModalId(postId);
+    setMenuOpenId(null);
+  };
+
+  const deletePost = async () => {
+    if (!deleteModalId) return;
+    try {
+      const response = await fetch(`/api/posts/${deleteModalId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        alert(data.message || "Error deleting post.");
+        return;
+      }
+      
+      setPosts((prev) => prev.filter((p) => p.id !== deleteModalId));
+      setDeleteModalId(null);
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      alert("An unexpected error occurred while deleting the post.");
+    }
+  };
+
+  
+  const handleEdit = (postId: number, existingCaption: string) => {
+    setEditModalId(postId);
+    setEditCaption(existingCaption || "");
+    setMenuOpenId(null);
+  };
+
+  const updatePost = async () => {
+    if (!editModalId) return;
+    try {
+      const response = await fetch(`/api/posts/${editModalId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ caption: editCaption }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        alert(data.message || "Error updating post.");
+        return;
+      }
+      
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => (post.id === editModalId ? data.data : post))
+      );
+      setEditModalId(null);
+      setEditCaption("");
+    } catch (error) {
+      console.error("Error updating post:", error);
+      alert("An unexpected error occurred while updating the post.");
     }
   };
 
@@ -175,7 +243,7 @@ const Dashboard = () => {
           <a href="/logout" className="hover:text-yellow-300">
             Log out
           </a>
-          {/* Notification Icon */}
+          {/* Notification Icon for total likes */}
           <div className="relative">
             <button className="relative">
               <svg
@@ -199,7 +267,7 @@ const Dashboard = () => {
               </span>
             )}
           </div>
-          {/* Plus Button */}
+          {/* Plus Button (create post) */}
           <button
             className="bg-yellow-500 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-lg hover:bg-yellow-600"
             onClick={() => setIsModalOpen(true)}
@@ -219,11 +287,14 @@ const Dashboard = () => {
             const isLiked = post.likes?.some(
               (like: any) => like.userId === currentUser?.id
             );
+            const isOwner = post.authorId === currentUser?.id;
+
             return (
               <div
                 key={post.id}
-                className="bg-white rounded-lg shadow-md overflow-hidden"
+                className="bg-white rounded-lg shadow-md overflow-hidden relative"
               >
+                {/* Media */}
                 {post.mediaType === "PICTURE" ? (
                   <img
                     src={post.mediaUrl}
@@ -236,31 +307,68 @@ const Dashboard = () => {
                     Your browser does not support the video tag.
                   </video>
                 )}
+
                 <div className="p-4">
                   <p className="text-gray-700">{post.caption}</p>
-                  <div className="flex items-center space-x-2 mt-2">
+
+                  <div className="flex items-center justify-between mt-2">
                     {/* Like Button */}
-                    <button onClick={() => handleLike(post.id)}>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill={isLiked ? "red" : "none"}
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        className={`w-5 h-5 ${
-                          isLiked ? "text-red-500" : "text-gray-500"
-                        }`}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5.121 21.364l-.007-.006a9.001 9.001 0 01-1.751-1.57C.465 16.68-.81 11.76 1.757 8.465 3.836 5.694 7.313 5 9.31 6.485c1.283.947 2.288 2.616 3.174 3.884.886-1.268 1.891-2.937 3.174-3.884 1.997-1.485 5.474-1.209 7.553 1.98 2.567 3.295 1.292 8.215-2.363 11.328a9.002 9.002 0 01-1.751 1.57l-.007.006L12 21.757l-6.879-6.393z"
-                        />
-                      </svg>
-                    </button>
-                    <span className="text-gray-700">
-                      {post.likes?.length ?? 0} likes
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button onClick={() => handleLike(post.id)}>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill={isLiked ? "red" : "none"}
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          className={`w-5 h-5 ${
+                            isLiked ? "text-red-500" : "text-gray-500"
+                          }`}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5.121 21.364l-.007-.006a9.001 9.001 0 01-1.751-1.57C.465 16.68-.81 11.76 1.757 8.465 3.836 5.694 7.313 5 9.31 6.485c1.283.947 2.288 2.616 3.174 3.884.886-1.268 1.891-2.937 3.174-3.884 1.997-1.485 5.474-1.209 7.553 1.98 2.567 3.295 1.292 8.215-2.363 11.328a9.002 9.002 0 01-1.751 1.57l-.007.006L12 21.757l-6.879-6.393z"
+                          />
+                        </svg>
+                      </button>
+                      <span className="text-gray-700">
+                        {post.likes?.length ?? 0} likes
+                      </span>
+                    </div>
+
+                    {/* 3-dot menu for the owner */}
+                    {isOwner && (
+                      <div className="relative">
+                        <button
+                          onClick={() => toggleMenu(post.id)}
+                          className="bg-white text-gray-700 hover:text-black p-1 rounded-full shadow-md"
+                        >
+                          {/* 3 dots symbol */}
+                          ⋯
+                        </button>
+                        {menuOpenId === post.id && (
+                          <div className="absolute bottom-10 right-0 bg-white border border-gray-200 shadow-md rounded-md p-2 z-50">
+                            {/* Edit (yellow) */}
+                            <button
+                              className="block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 text-yellow-500"
+                              onClick={() =>
+                                handleEdit(post.id, post.caption || "")
+                              }
+                            >
+                              Edit
+                            </button>
+                            {/* Delete (red) */}
+                            <button
+                              className="block w-full text-left px-2 py-1 text-sm hover:bg-gray-100 text-red-500"
+                              onClick={() => handleDeleteConfirm(post.id)}
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -274,7 +382,7 @@ const Dashboard = () => {
         TalkSport © 2024
       </footer>
 
-      {/* Modal for Uploading New Post */}
+      {/* Upload New Post Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
@@ -351,6 +459,77 @@ const Dashboard = () => {
                   className="bg-yellow-500 text-white rounded-md px-4 py-2 hover:bg-yellow-600"
                 >
                   Upload
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalId !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-md text-center">
+            <h3 className="text-xl font-bold mb-4">Delete Post</h3>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to delete this post?
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={() => setDeleteModalId(null)}
+                className="bg-gray-300 text-gray-700 rounded-md px-4 py-2 hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={deletePost}
+                className="bg-red-500 text-white rounded-md px-4 py-2 hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editModalId !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg">
+            <h3 className="text-xl font-bold mb-4">Edit Post</h3>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updatePost();
+              }}
+            >
+              <div className="mb-4">
+                <label
+                  htmlFor="editCaption"
+                  className="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  Caption
+                </label>
+                <textarea
+                  id="editCaption"
+                  value={editCaption}
+                  onChange={(e) => setEditCaption(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md p-2 text-black font-medium"
+                />
+              </div>
+              <div className="flex justify-end space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setEditModalId(null)}
+                  className="bg-gray-300 text-gray-700 rounded-md px-4 py-2 hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-yellow-500 text-white rounded-md px-4 py-2 hover:bg-yellow-600"
+                >
+                  Save
                 </button>
               </div>
             </form>

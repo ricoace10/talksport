@@ -1,4 +1,5 @@
-// pages/api/posts/index.ts
+
+
 import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient, MediaType } from "@prisma/client";
 
@@ -10,7 +11,7 @@ export default async function handler(
 ) {
   try {
     if (req.method === "GET") {
-      // Fetch all posts with author + likes
+     
       const posts = await prisma.post.findMany({
         include: {
           author: true,
@@ -22,7 +23,7 @@ export default async function handler(
       });
       return res.status(200).json({ success: true, data: posts });
     } else if (req.method === "POST") {
-      // Create a new post
+     
       const { authorId, mediaType, mediaUrl, caption } = req.body;
 
       if (!authorId || !mediaType || !mediaUrl) {
@@ -32,7 +33,7 @@ export default async function handler(
         });
       }
 
-      // Validate mediaType -> must match 'VIDEO' or 'PICTURE'
+     
       if (!Object.values(MediaType).includes(mediaType)) {
         return res.status(400).json({
           success: false,
@@ -48,7 +49,7 @@ export default async function handler(
           caption: caption || null,
         },
         include: {
-          likes: true, // Return the likes array (empty by default)
+          likes: true, 
         },
       });
 
@@ -56,7 +57,7 @@ export default async function handler(
     } else {
       return res.status(405).json({
         success: false,
-        message: "Method not allowed",
+        message: "Method not allowed.",
       });
     }
   } catch (error) {
