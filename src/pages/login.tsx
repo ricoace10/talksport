@@ -7,11 +7,9 @@ const Login = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
-  // This handles the form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Stop the browser from refreshing/redirecting by default
+    e.preventDefault();
 
-    // Gather user input from the form
     const email = (e.currentTarget.elements.namedItem("email") as HTMLInputElement).value;
     const password = (e.currentTarget.elements.namedItem("password") as HTMLInputElement).value;
 
@@ -23,7 +21,6 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Call our /api/auth/login endpoint
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -33,13 +30,15 @@ const Login = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        // Login failed (invalid credentials or server error)
         alert(data.message || "Login failed. Please try again.");
         setLoading(false);
         return;
       }
 
-      // If successful, redirect to /dashboard
+      // On success: store user data in localStorage
+      localStorage.setItem("user", JSON.stringify(data.data));
+
+      // Redirect to dashboard
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
@@ -57,7 +56,6 @@ const Login = () => {
             TalkSport
           </h1>
 
-          {/* We attach our handleSubmit function to the onSubmit event */}
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label

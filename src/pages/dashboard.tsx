@@ -1,32 +1,36 @@
 // pages/dashboard.tsx
 import { useState, useEffect } from "react";
 
-// Replace this with real auth logic (e.g., a global context or NextAuth)
-const mockCurrentUser = { id: 1, name: "John Doe" };
-
 const Dashboard = () => {
   const [posts, setPosts] = useState<any[]>([]);
   const [totalLikes, setTotalLikes] = useState(0);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({
-    mediaType: "PICTURE", // Must be 'VIDEO' or 'PICTURE' to match your schema enum
+    mediaType: "PICTURE", // must match your enum: "VIDEO" or "PICTURE"
     mediaUrl: "",
     caption: "",
   });
   const [file, setFile] = useState<File | null>(null);
 
-  // 1. Fetch posts on mount
+  // 1. On mount, get the user from localStorage & fetch posts
   useEffect(() => {
+    // Retrieve user from local storage
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+    }
+
+    // Fetch all posts
     const fetchPosts = async () => {
       try {
         const response = await fetch("/api/posts");
         const result = await response.json();
         if (response.ok) {
-          // result.data should be an array of posts
           setPosts(result.data);
-          // Calculate total likes across all posts
+          // Calculate total likes
           let sum = 0;
           result.data.forEach((post: any) => {
             sum += post.likes?.length || 0;
@@ -43,10 +47,14 @@ const Dashboard = () => {
     fetchPosts();
   }, []);
 
-  // 2. Create new post
+  // 2. Create a new post
   const handleUpload = async () => {
     if (!newPost.mediaUrl) {
-      alert("Please upload a file or provide a URL.");
+      alert("Please provide a file or media URL.");
+      return;
+    }
+    if (!currentUser?.id) {
+      alert("No current user found. Please log in again.");
       return;
     }
 
@@ -55,7 +63,7 @@ const Dashboard = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          authorId: mockCurrentUser.id, // real app: replace with actual user ID
+          authorId: currentUser.id,
           mediaType: newPost.mediaType,
           mediaUrl: newPost.mediaUrl,
           caption: newPost.caption,
@@ -68,13 +76,10 @@ const Dashboard = () => {
         return;
       }
 
-      // The new post is in data.data and should include likes: []
-      const createdPost = data.data;
-
-      // Add the new post to the top of our list
+      // The new post is in data.data
+      const createdPost = data.data; // includes likes: []
       setPosts((prev) => [createdPost, ...prev]);
 
-      // Currently, no likes for a brand-new post, so totalLikes doesn’t need to change
       setIsModalOpen(false);
       setNewPost({ mediaType: "PICTURE", mediaUrl: "", caption: "" });
       setFile(null);
@@ -88,10 +93,8 @@ const Dashboard = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
-      // In a real-world app, you'd upload to a server or storage service
       setNewPost({
         ...newPost,
-        // Convert local file to a temporary object URL for preview
         mediaUrl: URL.createObjectURL(e.target.files[0]),
       });
     }
@@ -99,11 +102,16 @@ const Dashboard = () => {
 
   // 4. Toggle like/unlike
   const handleLike = async (postId: number) => {
+    if (!currentUser?.id) {
+      alert("No current user found. Please log in again.");
+      return;
+    }
+
     try {
       const response = await fetch(`/api/posts/${postId}/like`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId: mockCurrentUser.id }),
+        body: JSON.stringify({ userId: currentUser.id }),
       });
 
       const data = await response.json();
@@ -116,24 +124,23 @@ const Dashboard = () => {
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post.id === postId) {
-            // Use optional chaining or default to an array
             const userAlreadyLiked = post.likes?.some(
-              (like: any) => like.userId === mockCurrentUser.id
+              (like: any) => like.userId === currentUser.id
             );
 
             if (userAlreadyLiked) {
-              // Remove the user's like from the array
+              // Remove the user's like
               return {
                 ...post,
                 likes: post.likes.filter(
-                  (like: any) => like.userId !== mockCurrentUser.id
+                  (like: any) => like.userId !== currentUser.id
                 ),
               };
             } else {
               // Add a new like
               return {
                 ...post,
-                likes: [...(post.likes || []), { userId: mockCurrentUser.id, postId }],
+                likes: [...(post.likes || []), { userId: currentUser.id, postId }],
               };
             }
           }
@@ -141,17 +148,14 @@ const Dashboard = () => {
         })
       );
 
-      // Recalculate total likes
-      setTotalLikes((prev) => {
-        // We can do a quick approach:
-        const likedPost = posts.find((p) => p.id === postId);
-        if (!likedPost) return prev;
-
-        // If userAlreadyLiked was true, we unliked => subtract 1
-        const wasLiked = likedPost.likes?.some(
-          (like: any) => like.userId === mockCurrentUser.id
+      // Recalc total likes (quick approach)
+      setTotalLikes((prevTotal) => {
+        const thisPost = posts.find((p) => p.id === postId);
+        if (!thisPost) return prevTotal;
+        const wasLiked = thisPost.likes?.some(
+          (like: any) => like.userId === currentUser.id
         );
-        return wasLiked ? prev - 1 : prev + 1;
+        return wasLiked ? prevTotal - 1 : prevTotal + 1;
       });
     } catch (error) {
       console.error("Error toggling like:", error);
@@ -212,12 +216,14 @@ const Dashboard = () => {
         </h2>
         <div className="max-w-2xl mx-auto space-y-6">
           {posts.map((post) => {
-            // Optional chaining to avoid undefined
             const isLiked = post.likes?.some(
-              (like: any) => like.userId === mockCurrentUser.id
+              (like: any) => like.userId === currentUser?.id
             );
             return (
-              <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div
+                key={post.id}
+                className="bg-white rounded-lg shadow-md overflow-hidden"
+              >
                 {post.mediaType === "PICTURE" ? (
                   <img
                     src={post.mediaUrl}
@@ -240,7 +246,9 @@ const Dashboard = () => {
                         fill={isLiked ? "red" : "none"}
                         viewBox="0 0 24 24"
                         stroke="currentColor"
-                        className={`w-5 h-5 ${isLiked ? "text-red-500" : "text-gray-500"}`}
+                        className={`w-5 h-5 ${
+                          isLiked ? "text-red-500" : "text-gray-500"
+                        }`}
                       >
                         <path
                           strokeLinecap="round"
@@ -266,11 +274,13 @@ const Dashboard = () => {
         TalkSport © 2024
       </footer>
 
-      {/* Upload Modal */}
+      {/* Modal for Uploading New Post */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-lg rounded-lg shadow-lg p-6">
-            <h3 className="text-yellow-500 text-lg font-bold mb-4">Upload Video/Photo</h3>
+            <h3 className="text-yellow-500 text-lg font-bold mb-4">
+              Upload Video/Photo
+            </h3>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -296,7 +306,6 @@ const Dashboard = () => {
                   <option value="VIDEO">Video</option>
                 </select>
               </div>
-
               <div className="mb-4">
                 <label
                   htmlFor="mediaFile"
@@ -312,7 +321,6 @@ const Dashboard = () => {
                   className="w-full mt-1 border border-gray-300 rounded-md p-2"
                 />
               </div>
-
               <div className="mb-4">
                 <label
                   htmlFor="caption"
@@ -328,9 +336,8 @@ const Dashboard = () => {
                   }
                   placeholder="Write a caption"
                   className="w-full mt-1 border border-gray-300 rounded-md p-2 text-black font-medium"
-                ></textarea>
+                />
               </div>
-
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"

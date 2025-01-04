@@ -12,7 +12,6 @@ export default async function handler(
     const postId = parseInt(req.query.id as string);
 
     if (req.method === "POST") {
-      // Toggling a like for user
       const { userId } = req.body;
       if (!userId) {
         return res.status(400).json({
@@ -21,7 +20,7 @@ export default async function handler(
         });
       }
 
-      // Check if the post actually exists
+      // Check if post exists
       const post = await prisma.post.findUnique({ where: { id: postId } });
       if (!post) {
         return res.status(404).json({
@@ -30,7 +29,7 @@ export default async function handler(
         });
       }
 
-      // Check if the user has already liked this post
+      // Check if like already exists
       const existingLike = await prisma.like.findUnique({
         where: {
           userId_postId: {
@@ -41,7 +40,7 @@ export default async function handler(
       });
 
       if (existingLike) {
-        // If the like exists, remove it (unlike)
+        // If user already liked, remove the like (unlike)
         await prisma.like.delete({
           where: {
             userId_postId: {
@@ -68,7 +67,6 @@ export default async function handler(
         });
       }
     } else {
-      // Method not allowed
       return res.status(405).json({
         success: false,
         message: "Method not allowed",

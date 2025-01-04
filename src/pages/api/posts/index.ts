@@ -10,11 +10,11 @@ export default async function handler(
 ) {
   try {
     if (req.method === "GET") {
-      // Fetch all posts, including author & likes
+      // Fetch all posts with author + likes
       const posts = await prisma.post.findMany({
         include: {
           author: true,
-          likes: true, // ensures each post has likes: []
+          likes: true,
         },
         orderBy: {
           createdAt: "desc",
@@ -32,7 +32,7 @@ export default async function handler(
         });
       }
 
-      // Validate mediaType: must be 'VIDEO' or 'PICTURE' (per your enum)
+      // Validate mediaType -> must match 'VIDEO' or 'PICTURE'
       if (!Object.values(MediaType).includes(mediaType)) {
         return res.status(400).json({
           success: false,
@@ -48,13 +48,12 @@ export default async function handler(
           caption: caption || null,
         },
         include: {
-          likes: true, // returns the newly created post's likes (empty array)
+          likes: true, // Return the likes array (empty by default)
         },
       });
 
       return res.status(201).json({ success: true, data: newPost });
     } else {
-      // Method not allowed
       return res.status(405).json({
         success: false,
         message: "Method not allowed",
