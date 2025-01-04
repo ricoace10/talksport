@@ -1,6 +1,54 @@
+// pages/login.tsx
+import { useState } from "react";
+import { useRouter } from "next/router";
 import Layout from "../components/Layout";
 
 const Login = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  // This handles the form submission
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // Stop the browser from refreshing/redirecting by default
+
+    // Gather user input from the form
+    const email = (e.currentTarget.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (e.currentTarget.elements.namedItem("password") as HTMLInputElement).value;
+
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Call our /api/auth/login endpoint
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Login failed (invalid credentials or server error)
+        alert(data.message || "Login failed. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      // If successful, redirect to /dashboard
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -9,7 +57,8 @@ const Login = () => {
             TalkSport
           </h1>
 
-          <form>
+          {/* We attach our handleSubmit function to the onSubmit event */}
+          <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -20,6 +69,7 @@ const Login = () => {
               <input
                 type="email"
                 id="email"
+                name="email"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Enter your email"
               />
@@ -35,6 +85,7 @@ const Login = () => {
               <input
                 type="password"
                 id="password"
+                name="password"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Enter your password"
               />
@@ -42,9 +93,10 @@ const Login = () => {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full bg-black text-yellow-500 py-2 rounded-md hover:bg-gray-800 transition duration-200"
             >
-              Log in
+              {loading ? "Logging in..." : "Log in"}
             </button>
           </form>
         </div>
