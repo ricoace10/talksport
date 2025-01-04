@@ -105,3 +105,9 @@ Slutrapport
 
 Deploy
  Ditt projekt ska vara hostat och tillgängligt för att kunna visas i en webbläsare eller simulator.(klart)
+
+
+
+
+ [
+            ](https://talksports.netlify.app/)
