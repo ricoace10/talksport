@@ -1,4 +1,4 @@
-
+// pages/dashboard.tsx
 import { useState, useEffect } from "react";
 
 const Dashboard = () => {
@@ -6,7 +6,7 @@ const Dashboard = () => {
   const [totalLikes, setTotalLikes] = useState(0);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
- 
+  // Create Post Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newPost, setNewPost] = useState({
     mediaType: "PICTURE",
@@ -15,20 +15,20 @@ const Dashboard = () => {
   });
   const [file, setFile] = useState<File | null>(null);
 
-  
+  // Menu, Delete, and Edit States
   const [menuOpenId, setMenuOpenId] = useState<number | null>(null);
   const [deleteModalId, setDeleteModalId] = useState<number | null>(null);
   const [editModalId, setEditModalId] = useState<number | null>(null);
   const [editCaption, setEditCaption] = useState<string>("");
 
-  
+  // 1. On mount, get current user & fetch posts
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
     }
 
-   
+    // Fetch all posts from all users
     const fetchPosts = async () => {
       try {
         const response = await fetch("/api/posts");
@@ -36,7 +36,7 @@ const Dashboard = () => {
         if (response.ok) {
           setPosts(result.data);
 
-         
+          // Calculate total likes
           let sum = 0;
           result.data.forEach((post: any) => {
             sum += post.likes?.length || 0;
@@ -53,7 +53,7 @@ const Dashboard = () => {
     fetchPosts();
   }, []);
 
-  
+  // 2. Handle uploading a new post
   const handleUpload = async () => {
     if (!newPost.mediaUrl) {
       alert("Please provide a file or media URL.");
@@ -82,7 +82,7 @@ const Dashboard = () => {
         return;
       }
 
-      
+      // Insert new post at top
       setPosts((prev) => [data.data, ...prev]);
 
       setIsModalOpen(false);
@@ -104,7 +104,7 @@ const Dashboard = () => {
     }
   };
 
-  
+  // 3. Like or Unlike
   const handleLike = async (postId: number) => {
     if (!currentUser?.id) {
       alert("No current user found. Please log in again.");
@@ -131,7 +131,7 @@ const Dashboard = () => {
               (like: any) => like.userId === currentUser.id
             );
             if (userAlreadyLiked) {
-             
+              // remove the like
               return {
                 ...post,
                 likes: post.likes.filter(
@@ -139,7 +139,7 @@ const Dashboard = () => {
                 ),
               };
             } else {
-              
+              // add a like
               return {
                 ...post,
                 likes: [
@@ -153,7 +153,7 @@ const Dashboard = () => {
         })
       );
 
-     
+      // Re-calc total likes
       setTotalLikes((prevTotal) => {
         const thisPost = posts.find((p) => p.id === postId);
         if (!thisPost) return prevTotal;
@@ -168,12 +168,12 @@ const Dashboard = () => {
     }
   };
 
-  
+  // 4. Show/hide the 3-dot menu
   const toggleMenu = (postId: number) => {
     setMenuOpenId((prev) => (prev === postId ? null : postId));
   };
 
-  
+  // 5. Deleting a post
   const handleDeleteConfirm = (postId: number) => {
     setDeleteModalId(postId);
     setMenuOpenId(null);
@@ -190,7 +190,7 @@ const Dashboard = () => {
         alert(data.message || "Error deleting post.");
         return;
       }
-      
+      // remove from local state
       setPosts((prev) => prev.filter((p) => p.id !== deleteModalId));
       setDeleteModalId(null);
     } catch (error) {
@@ -199,7 +199,7 @@ const Dashboard = () => {
     }
   };
 
-  
+  // 6. Editing a post
   const handleEdit = (postId: number, existingCaption: string) => {
     setEditModalId(postId);
     setEditCaption(existingCaption || "");
@@ -219,7 +219,7 @@ const Dashboard = () => {
         alert(data.message || "Error updating post.");
         return;
       }
-      
+      // Update local state
       setPosts((prevPosts) =>
         prevPosts.map((post) => (post.id === editModalId ? data.data : post))
       );
