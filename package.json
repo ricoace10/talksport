@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "queries": "npx tsx script.ts"
+    "queries": "npx tsx script.ts",
+    "postbuild": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.0.1",
