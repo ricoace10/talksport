@@ -39,13 +39,18 @@ model Post {
 }
 
 model Like {
-  id          Int       @id @default(autoincrement())
-  userId      Int
-  user        User      @relation(fields: [userId], references: [id])
-  postId      Int
-  post        Post      @relation(fields: [postId], references: [id])
-  createdAt   DateTime  @default(now())
+  id        Int    @id @default(autoincrement())
+  userId    Int
+  postId    Int
+
+  user      User   @relation(fields: [userId], references: [id])
+  post      Post   @relation(fields: [postId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
 }
+
 
 enum MediaType {
   VIDEO

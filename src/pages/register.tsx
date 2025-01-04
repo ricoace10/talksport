@@ -1,14 +1,59 @@
-import Layout from "../components/Layout";
-import Link from "next/link";
+// pages/register.tsx
+
 import { useState } from "react";
+import Link from "next/link";
+import Layout from "../components/Layout";
 
 const Register = () => {
+  // Controls whether the success modal is visible
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Submit handler for the registration form
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Simulate successful registration
-    setIsModalOpen(true);
+
+    // Extract form values using named form elements
+    const name = (e.currentTarget.elements.namedItem("username") as HTMLInputElement).value;
+    const email = (e.currentTarget.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (e.currentTarget.elements.namedItem("password") as HTMLInputElement).value;
+    const confirmPassword = (e.currentTarget.elements.namedItem("confirm-password") as HTMLInputElement).value;
+
+    // Very basic validation
+    if (!name || !email || !password || !confirmPassword) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    // Check if password and confirm password match
+    if (password !== confirmPassword) {
+      alert("Passwords do not match. Please try again.");
+      return;
+    }
+
+    try {
+      // Call your API endpoint to register the user
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      // If registration failed, display the error message
+      if (!response.ok) {
+        alert(data.message || "An error occurred during registration.");
+        return;
+      }
+
+      // If successful, open the success modal
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error("Registration error:", error);
+      alert("An unexpected error occurred. Please try again.");
+    }
   };
 
   return (
@@ -26,7 +71,9 @@ const Register = () => {
             instead.
           </p>
 
+          {/* Registration Form */}
           <form onSubmit={handleSubmit}>
+            {/* Username */}
             <div className="mb-4">
               <label
                 htmlFor="username"
@@ -37,11 +84,14 @@ const Register = () => {
               <input
                 type="text"
                 id="username"
+                name="username"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Enter your username"
+                required
               />
             </div>
 
+            {/* Email */}
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -52,11 +102,14 @@ const Register = () => {
               <input
                 type="email"
                 id="email"
+                name="email"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Enter your email"
+                required
               />
             </div>
 
+            {/* Password */}
             <div className="mb-4">
               <label
                 htmlFor="password"
@@ -67,20 +120,18 @@ const Register = () => {
               <input
                 type="password"
                 id="password"
+                name="password"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Enter your password"
+                required
               />
               <ul className="text-xs text-gray-600 mt-2">
-                <li>
-                  • Your password can’t be too similar to your other personal
-                  information.
-                </li>
-                <li>• Your password must contain at least 8 characters.</li>
-                <li>• Your password can’t be a commonly used password.</li>
-                <li>• Your password can’t be entirely numeric.</li>
+                <li>• Your password must be at least 8 characters.</li>
+                <li>• It can’t be a commonly used or entirely numeric password.</li>
               </ul>
             </div>
 
+            {/* Confirm Password */}
             <div className="mb-6">
               <label
                 htmlFor="confirm-password"
@@ -91,11 +142,14 @@ const Register = () => {
               <input
                 type="password"
                 id="confirm-password"
+                name="confirm-password"
                 className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
                 placeholder="Confirm your password"
+                required
               />
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               className="w-full bg-yellow-500 text-white py-2 rounded-md hover:bg-yellow-600 transition duration-200"
