@@ -268,22 +268,12 @@ const Dashboard = () => {
           </Link>
           {/* Notification Icon for total likes */}
           <div className="relative">
-            <button className="relative">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14h-6a2 2 0 01-2-2V7a4 4 0 118 0v5a2 2 0 01-2 2h-1"
-                />
-              </svg>
-            </button>
+          <button aria-label="Notifications">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14h-6a2 2 0 01-2-2V7a4 4 0 118 0v5a2 2 0 01-2 2h-1" />
+  </svg>
+</button>
+
             {totalLikes > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 {totalLikes}
@@ -369,7 +359,8 @@ const Dashboard = () => {
                         <button
                           onClick={() => toggleMenu(post.id)}
                           className="bg-white text-gray-700 hover:text-black p-1 rounded-full shadow-md"
-                        >
+                          aria-label="Options menu"
+                          >
                           ⋯
                         </button>
                         {menuOpenId === post.id && (
