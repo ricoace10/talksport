@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import Layout from "../components/Layout";
 
 const Login = () => {
@@ -47,9 +48,13 @@ const Login = () => {
 
   return (
     <Layout>
-      <div className="flex justify-center items-center h-screen bg-gray-100 px-4 sm:px-6 md:px-8">
+      <Head>
+        <title>TalkSport - Login</title>
+        <meta name="description" content="Log in to your TalkSport account and engage in football discussions." />
+      </Head>
+      <div className="flex justify-center items-center h-screen bg-gray-200 px-4 sm:px-6 md:px-8">
         <div className="w-full max-w-sm bg-white p-6 sm:p-8 rounded-md shadow-md">
-          <h1 className="text-3xl sm:text-4xl font-bold text-yellow-500 mb-6 sm:mb-8 text-center">
+          <h1 className="text-3xl sm:text-4xl font-bold text-yellow-700 mb-6 sm:mb-8 text-center">
             TalkSport
           </h1>
 
@@ -57,7 +62,7 @@ const Login = () => {
             <div className="mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-800 mb-1"
               >
                 Email address
               </label>
@@ -65,15 +70,16 @@ const Login = () => {
                 type="email"
                 id="email"
                 name="email"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium text-sm sm:text-base"
+                className="w-full p-2 border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-600 text-black font-medium text-sm sm:text-base"
                 placeholder="Enter your email"
+                required
               />
             </div>
 
             <div className="mb-6">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-medium text-gray-800 mb-1"
               >
                 Password
               </label>
@@ -81,15 +87,16 @@ const Login = () => {
                 type="password"
                 id="password"
                 name="password"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium text-sm sm:text-base"
+                className="w-full p-2 border border-gray-400 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-600 text-black font-medium text-sm sm:text-base"
                 placeholder="Enter your password"
+                required
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-black text-yellow-500 py-2 sm:py-3 rounded-md hover:bg-gray-800 transition duration-200 text-sm sm:text-base"
+              className="w-full bg-yellow-700 text-white py-2 sm:py-3 rounded-md hover:bg-yellow-800 transition duration-200 text-sm sm:text-base"
             >
               {loading ? "Logging in..." : "Log in"}
             </button>

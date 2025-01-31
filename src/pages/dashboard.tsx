@@ -292,7 +292,7 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="flex-grow px-4 py-6">
-        <h2 className="text-4xl text-yellow-500 font-bold text-center mb-8">
+        <h2 className="text-4xl text-yellow-700 font-bold text-center mb-8">
           TalkSport
         </h2>
         <div className="max-w-2xl mx-auto space-y-6">
@@ -325,7 +325,7 @@ const Dashboard = () => {
                 )}
 
                 <div className="p-4">
-                  <p className="text-gray-700">{post.caption}</p>
+                  <p className="text-gray-800">{post.caption}</p>
 
                   <div className="flex items-center justify-between mt-2">
                     {/* Like Button */}
@@ -392,7 +392,7 @@ const Dashboard = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-black text-yellow-500 text-center py-4">
+      <footer className="bg-black text-yellow-600 text-center py-4">
         TalkSport © 2024
       </footer>
 
