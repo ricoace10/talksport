@@ -8,7 +8,7 @@ const Navbar = () => {
     <nav className="bg-black text-yellow-500 px-6 py-4 flex justify-between items-center relative">
       {/* Logo */}
       <div className="text-lg font-bold">
-        <Link href="/">TalkSport</Link>
+        <Link href="/" title="Go to TalkSport Homepage">TalkSport</Link>
       </div>
 
       {/* Hamburger Icon */}
@@ -16,6 +16,7 @@ const Navbar = () => {
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="focus:outline-none"
+          title="Toggle menu"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -36,13 +37,13 @@ const Navbar = () => {
 
       {/* Links for larger screens */}
       <div className="hidden md:flex space-x-6">
-        <Link href="/" className="hover:text-yellow-300">
+        <Link href="/" className="hover:text-yellow-300" title="Go to Home Page">
           Home
         </Link>
-        <Link href="/register" className="hover:text-yellow-300">
+        <Link href="/register" className="hover:text-yellow-300" title="Register for an account">
           Register
         </Link>
-        <Link href="/login" className="hover:text-yellow-300">
+        <Link href="/login" className="hover:text-yellow-300" title="Login to your account">
           Login
         </Link>
       </div>
@@ -53,6 +54,7 @@ const Navbar = () => {
           <button
             onClick={() => setIsMenuOpen(false)}
             className="absolute top-4 right-6 text-white text-2xl focus:outline-none"
+            title="Close menu"
           >
             &times;
           </button>
@@ -60,6 +62,7 @@ const Navbar = () => {
             href="/"
             className="text-yellow-500 text-2xl mb-4 hover:text-yellow-300"
             onClick={() => setIsMenuOpen(false)}
+            title="Go to Home Page"
           >
             Home
           </Link>
@@ -67,6 +70,7 @@ const Navbar = () => {
             href="/register"
             className="text-yellow-500 text-2xl mb-4 hover:text-yellow-300"
             onClick={() => setIsMenuOpen(false)}
+            title="Register for an account"
           >
             Register
           </Link>
@@ -74,6 +78,7 @@ const Navbar = () => {
             href="/login"
             className="text-yellow-500 text-2xl mb-4 hover:text-yellow-300"
             onClick={() => setIsMenuOpen(false)}
+            title="Login to your account"
           >
             Login
           </Link>
