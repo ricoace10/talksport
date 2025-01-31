@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useRouter } from "next/router";
 import Layout from "../components/Layout";
@@ -35,10 +34,8 @@ const Login = () => {
         return;
       }
 
-     
       localStorage.setItem("user", JSON.stringify(data.data));
 
-     
       router.push("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
@@ -50,9 +47,9 @@ const Login = () => {
 
   return (
     <Layout>
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="w-full max-w-sm bg-white p-8 rounded-md shadow-md">
-          <h1 className="text-4xl font-bold text-yellow-500 mb-8 text-center">
+      <div className="flex justify-center items-center h-screen bg-gray-100 px-4 sm:px-6 md:px-8">
+        <div className="w-full max-w-sm bg-white p-6 sm:p-8 rounded-md shadow-md">
+          <h1 className="text-3xl sm:text-4xl font-bold text-yellow-500 mb-6 sm:mb-8 text-center">
             TalkSport
           </h1>
 
@@ -68,7 +65,7 @@ const Login = () => {
                 type="email"
                 id="email"
                 name="email"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium text-sm sm:text-base"
                 placeholder="Enter your email"
               />
             </div>
@@ -84,7 +81,7 @@ const Login = () => {
                 type="password"
                 id="password"
                 name="password"
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium"
+                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black font-medium text-sm sm:text-base"
                 placeholder="Enter your password"
               />
             </div>
@@ -92,7 +89,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-black text-yellow-500 py-2 rounded-md hover:bg-gray-800 transition duration-200"
+              className="w-full bg-black text-yellow-500 py-2 sm:py-3 rounded-md hover:bg-gray-800 transition duration-200 text-sm sm:text-base"
             >
               {loading ? "Logging in..." : "Log in"}
             </button>
