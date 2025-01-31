@@ -53,7 +53,7 @@ const Register = () => {
         <title>TalkSport - Register</title>
         <meta name="description" content="Create a new TalkSport account and join the community." />
       </Head>
-      <div className="flex justify-center items-center min-h-screen bg-gray-200 px-4 sm:px-6 md:px-8">
+      <div className="absolute inset-0 flex items-center justify-center bg-gray-200 px-4 sm:px-6 md:px-8">
         <div className="w-full max-w-xs sm:max-w-md md:max-w-lg lg:max-w-xl bg-white p-6 sm:p-8 rounded-md shadow-md">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-black mb-3 sm:mb-4 md:mb-5 text-center">
             Sign Up

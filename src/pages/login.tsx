@@ -52,7 +52,7 @@ const Login = () => {
         <title>TalkSport - Login</title>
         <meta name="description" content="Log in to your TalkSport account and engage in football discussions." />
       </Head>
-      <div className="flex justify-center items-center h-screen bg-gray-200 px-4 sm:px-6 md:px-8">
+      <div className="absolute inset-0 flex items-center justify-center bg-gray-200 px-4 sm:px-6 md:px-8">
         <div className="w-full max-w-sm bg-white p-6 sm:p-8 rounded-md shadow-md">
           <h1 className="text-3xl sm:text-4xl font-bold text-yellow-700 mb-6 sm:mb-8 text-center">
             TalkSport
