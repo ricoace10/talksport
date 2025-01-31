@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Post, User} from "../types";
+import Head from "next/head";
 
 interface Like {
   userId: number;
@@ -242,8 +243,18 @@ const Dashboard = () => {
       alert("An unexpected error occurred while updating the post.");
     }
   };
+  useEffect(() => {
+    document.documentElement.lang = "en";
+  }, []);
+
 
   return (
+<>
+      <Head>
+        <html lang="en" />
+        <title>TalkSport - Dashboard</title>
+        <meta name="description" content="TalkSport dashboard where users can interact, post content, and engage with the community." />
+      </Head>
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Navbar */}
       <header className="bg-black text-yellow-500 flex justify-between items-center px-6 py-4">
@@ -257,31 +268,21 @@ const Dashboard = () => {
           </Link>
           {/* Notification Icon for total likes */}
           <div className="relative">
-            <button className="relative">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14h-6a2 2 0 01-2-2V7a4 4 0 118 0v5a2 2 0 01-2 2h-1"
-                />
-              </svg>
-            </button>
+          <button aria-label="Notifications">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14h-6a2 2 0 01-2-2V7a4 4 0 118 0v5a2 2 0 01-2 2h-1" />
+  </svg>
+</button>
+
             {totalLikes > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-red-700 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                 {totalLikes}
               </span>
             )}
           </div>
           {/* Plus Button (create post) */}
           <button
-            className="bg-yellow-500 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-lg hover:bg-yellow-600"
+            className="bg-yellow-700 text-white rounded-full h-6 w-6 flex items-center justify-center shadow-lg hover:bg-yellow-600"
             onClick={() => setIsModalOpen(true)}
           >
             +
@@ -291,7 +292,7 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="flex-grow px-4 py-6">
-        <h2 className="text-4xl text-yellow-500 font-bold text-center mb-8">
+        <h2 className="text-4xl text-yellow-700 font-bold text-center mb-8">
           TalkSport
         </h2>
         <div className="max-w-2xl mx-auto space-y-6">
@@ -324,12 +325,12 @@ const Dashboard = () => {
                 )}
 
                 <div className="p-4">
-                  <p className="text-gray-700">{post.caption}</p>
+                  <p className="text-gray-800">{post.caption}</p>
 
                   <div className="flex items-center justify-between mt-2">
                     {/* Like Button */}
                     <div className="flex items-center space-x-2">
-                      <button onClick={() => handleLike(post.id)}>
+                      <button onClick={() => handleLike(post.id)} aria-label={isLiked ? "Unlike this post" : "Like this post"}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill={isLiked ? "red" : "none"}
@@ -358,7 +359,8 @@ const Dashboard = () => {
                         <button
                           onClick={() => toggleMenu(post.id)}
                           className="bg-white text-gray-700 hover:text-black p-1 rounded-full shadow-md"
-                        >
+                          aria-label="Options menu"
+                          >
                           ⋯
                         </button>
                         {menuOpenId === post.id && (
@@ -390,7 +392,7 @@ const Dashboard = () => {
       </main>
 
       {/* Footer */}
-      <footer className="bg-black text-yellow-500 text-center py-4">
+      <footer className="bg-black text-yellow-600 text-center py-4">
         TalkSport © 2024
       </footer>
 
@@ -555,6 +557,7 @@ const Dashboard = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 
