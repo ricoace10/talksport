@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Post, User} from "../types";
+import Head from "next/head";
 
 interface Like {
   userId: number;
@@ -242,8 +243,18 @@ const Dashboard = () => {
       alert("An unexpected error occurred while updating the post.");
     }
   };
+  useEffect(() => {
+    document.documentElement.lang = "en";
+  }, []);
+
 
   return (
+<>
+      <Head>
+        <html lang="en" />
+        <title>TalkSport - Dashboard</title>
+        <meta name="description" content="TalkSport dashboard where users can interact, post content, and engage with the community." />
+      </Head>
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Navbar */}
       <header className="bg-black text-yellow-500 flex justify-between items-center px-6 py-4">
@@ -555,6 +566,7 @@ const Dashboard = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
 

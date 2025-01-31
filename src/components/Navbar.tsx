@@ -8,6 +8,7 @@ const Navbar = () => {
   return (
     <>
       <Head>
+        <html lang="en" />
         <title>TalkSport - Home of Football Discussions</title>
         <meta name="description" content="Join TalkSport, the ultimate platform for football discussions, news, and updates." />
       </Head>
