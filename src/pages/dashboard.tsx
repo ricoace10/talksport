@@ -330,7 +330,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between mt-2">
                     {/* Like Button */}
                     <div className="flex items-center space-x-2">
-                      <button onClick={() => handleLike(post.id)}>
+                      <button onClick={() => handleLike(post.id)} aria-label={isLiked ? "Unlike this post" : "Like this post"}>
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
                           fill={isLiked ? "red" : "none"}
