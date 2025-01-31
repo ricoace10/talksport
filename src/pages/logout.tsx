@@ -16,7 +16,7 @@ const Logout = () => {
       </Head>
       <div className="min-h-screen flex flex-col bg-gray-100">
         {/* Navbar */}
-        <header className="bg-black text-yellow-500 flex justify-between items-center px-4 sm:px-6 py-4">
+        <header className="bg-black text-yellow-400 flex justify-between items-center px-4 sm:px-6 py-4">
           <h1 className="text-base sm:text-lg font-bold">TalkSport</h1>
           <div className="flex items-center space-x-4 sm:space-x-6">
             <Link href="/dashboard" className="hover:text-yellow-300 text-sm sm:text-base">
@@ -30,17 +30,19 @@ const Logout = () => {
 
         {/* Main Content */}
         <main className="flex-grow px-4 py-6 flex flex-col items-center justify-center">
-          <h2 className="text-3xl sm:text-4xl text-yellow-700 font-bold mb-4 sm:mb-6">TalkSport</h2>
+          <h2 className="text-3xl sm:text-4xl text-yellow-800 font-extrabold mb-4 sm:mb-6">
+            TalkSport
+          </h2>
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md text-center w-full max-w-xs sm:max-w-sm">
-            <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Sign Out</h3>
-            <p className="text-gray-700 text-sm sm:text-base mb-4 sm:mb-6">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Sign Out</h3>
+            <p className="text-gray-800 text-sm sm:text-base mb-4 sm:mb-6">
               Are you sure you want to sign out?
             </p>
             <button
               onClick={() => {
                 window.location.href = "/";
               }}
-              className="bg-black text-yellow-500 py-2 sm:py-3 px-4 sm:px-6 rounded-md hover:bg-gray-800 transition duration-200 text-sm sm:text-base"
+              className="bg-black text-yellow-400 py-2 sm:py-3 px-4 sm:px-6 rounded-md hover:bg-gray-800 transition duration-200 text-sm sm:text-base font-semibold"
             >
               Sign Out
             </button>
@@ -48,7 +50,7 @@ const Logout = () => {
         </main>
 
         {/* Footer */}
-        <footer className="bg-black text-yellow-500 text-center py-3 sm:py-4 text-sm sm:text-base">
+        <footer className="bg-black text-yellow-400 text-center py-3 sm:py-4 text-sm sm:text-base">
           TalkSport © 2024
         </footer>
       </div>
