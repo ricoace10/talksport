@@ -12,15 +12,17 @@ export default async function handler(
     const postId = parseInt(req.query.id as string);
 
     if (req.method === "POST") {
+      // 1) Get userId from body (no auth required)
       const { userId } = req.body;
+
       if (!userId) {
         return res.status(400).json({
           success: false,
-          message: "userId is required.",
+          message: "Missing userId in request body.",
         });
       }
 
-      // Check if post exists
+      // 2) Check if post exists
       const post = await prisma.post.findUnique({ where: { id: postId } });
       if (!post) {
         return res.status(404).json({
@@ -29,7 +31,7 @@ export default async function handler(
         });
       }
 
-      // Check if like already exists
+      // 3) Check if like already exists
       const existingLike = await prisma.like.findUnique({
         where: {
           userId_postId: {
@@ -69,7 +71,7 @@ export default async function handler(
     } else {
       return res.status(405).json({
         success: false,
-        message: "Method not allowed",
+        message: "Method not allowed.",
       });
     }
   } catch (error) {
