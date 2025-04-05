@@ -192,31 +192,30 @@ const Dashboard = () => {
 
   const deletePost = async () => {
     if (!deleteModalId) return;
-  
     try {
       const response = await fetch(`/api/posts/${deleteModalId}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: Number(currentUser?.id), // Convert to number
+          userId: Number(currentUser?.id),
         }),
       });
-  
+    
       const data = await response.json();
       if (!response.ok) {
         alert(data.message || "Error deleting post.");
         return;
       }
-  
-      // Success logic: remove post from local state, close modal, etc.
-      // e.g.,
-      // setPosts((prev) => prev.filter((p) => p.id !== deleteModalId));
-      // setDeleteModalId(null);
+      
+      // Success logic: update local state & close modal
+      setPosts((prev) => prev.filter((p) => p.id !== deleteModalId));
+      setDeleteModalId(null);
     } catch (error) {
       console.error("Error deleting post:", error);
       alert("An unexpected error occurred while deleting the post.");
     }
   };
+  
   
 
   // 6. Editing a post
@@ -228,32 +227,30 @@ const Dashboard = () => {
 
   const updatePost = async () => {
     if (!editModalId) return;
-  
     try {
       const response = await fetch(`/api/posts/${editModalId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: Number(currentUser?.id), // Convert to number
+          userId: Number(currentUser?.id),
           caption: editCaption,
         }),
       });
-  
+    
       const data = await response.json();
       if (!response.ok) {
         alert(data.message || "Error updating post.");
         return;
       }
-  
+      
       // Success logic: update local state, close modal, etc.
-      // e.g.,
-      // setPosts((prevPosts) =>
-      //   prevPosts.map((post) =>
-      //     post.id === editModalId ? data.data : post
-      //   )
-      // );
-      // setEditModalId(null);
-      // setEditCaption("");
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === editModalId ? data.data : post
+        )
+      );
+      setEditModalId(null);
+      setEditCaption("");
     } catch (error) {
       console.error("Error updating post:", error);
       alert("An unexpected error occurred while updating the post.");
